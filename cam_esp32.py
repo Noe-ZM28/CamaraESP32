@@ -2,14 +2,14 @@ import cv2
 import pytesseract
 
 # Cargar el video desde el archivo
-video_path = 'videos/v3.mp4'
+video_path = 'videos/v11.mp4'
 cap = cv2.VideoCapture(video_path)
 
 reader = pytesseract.image_to_string
 
-real_plate = None
+real_txt_plate = None
 
-PLATES = ["A-522-JME", "LD-73-546", "Lf-55-593"]
+PLATES = ["A-522-JME", "LD-73-546", "LF-55-593"]
 
 window_size = (1040, 680)
 
@@ -20,8 +20,8 @@ while cap.isOpened():
     plate = ""
     ret, frame = cap.read()
     if not ret:
-        print("error")
-        continue
+        print("termino video")
+        break
 
     # Dimensiones y posición del recuadro rojo en el centro
 
@@ -46,20 +46,26 @@ while cap.isOpened():
     # Encontrar los contornos en el área de interés
     contours, _ = cv2.findContours(edges.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
+    # Variable para rastrear si se ha detectado un rectángulo en este frame
+    rectangle_detected = False
+
     # Recorrer los contornos en busca de rectángulos
     for contour in contours:
         perimeter = cv2.arcLength(contour, True)
         approx = cv2.approxPolyDP(contour, 0.04 * perimeter, True)
+        if rectangle_detected:
+            break  # Salir del bucle si ya se ha detectado un rectángulo
 
         # Si el contorno tiene cuatro vértices (rectángulo)
         if len(approx) == 4:
             x, y, w, h = cv2.boundingRect(approx)
+
             if w < h:
                 continue
 
             # Descartar rectángulos muy pequeños y los que sean más largos que anchos
             aspect_ratio = w / float(h)
-            if (w > 150 and h > 50) and (aspect_ratio <= 2.5) and (aspect_ratio >= 0.5):
+            if (w > 150 and h > 50) and (aspect_ratio <= 2.5) and (aspect_ratio >= 1):
                 # Recortar y procesar el área de la placa
                 plate_image = gray_roi[y:y + h, x:x + w]
 
@@ -67,19 +73,21 @@ while cap.isOpened():
                 plate_text = reader(plate_image, config='--psm 8')
                 long_plate_text = len(plate_text)
 
-                if long_plate_text < 5:
+                #Si la cantidad de letras detectadas es menor a 8 pasa al siguiene Frame
+                if long_plate_text < 8:
                     continue
 
                 # Dibujar el rectángulo del área de la placa en el recuadro rojo
                 cv2.rectangle(frame, (rect_x + x, rect_y + y), (rect_x + x + w, rect_y + y + h), (0, 255, 0), 2)
 
                 # Dibujar el texto de la placa sobre el recuadro rojo
-                cv2.putText(frame, 'Placa: ' + plate_text, (rect_x, rect_y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-
-                if plate_text in PLATES:
+                cv2.putText(frame, f'Placa: {plate_text}', (rect_x, rect_y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                real_txt_plate = plate_text
+                if str(plate_text) in PLATES:
                     print("*" * 50)
                     print("Funciona!")
                 print(plate_text)
+                rectangle_detected = True
 
     # Redimensionar el frame para mostrarlo en una ventana más pequeña
     resized_frame = cv2.resize(frame, window_size)
@@ -92,3 +100,5 @@ while cap.isOpened():
 
 cap.release()
 cv2.destroyAllWindows()
+
+
