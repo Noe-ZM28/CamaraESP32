@@ -2,7 +2,7 @@ import cv2
 import pytesseract
 
 # Cargar el video desde el archivo
-video_path = 'videos/v8.mp4'
+video_path = 'videos/v3.mp4'
 cap = cv2.VideoCapture(video_path)
 
 reader = pytesseract.image_to_string
@@ -74,7 +74,7 @@ while cap.isOpened():
                 cv2.rectangle(frame, (rect_x + x, rect_y + y), (rect_x + x + w, rect_y + y + h), (0, 255, 0), 2)
 
                 # Dibujar el texto de la placa sobre el recuadro rojo
-                cv2.putText(frame, 'Placa: ' + plate_text, (rect_x + x, rect_y + y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                cv2.putText(frame, 'Placa: ' + plate_text, (rect_x, rect_y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
                 if plate_text in PLATES:
                     print("*" * 50)
@@ -87,7 +87,7 @@ while cap.isOpened():
     # Mostrar el frame con el recuadro rojo, rectángulos y el texto de las placas
     cv2.imshow('Video con Placas', resized_frame)
 
-    if cv2.waitKey(10) & 0xFF == ord('q'):
+    if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
 cap.release()
