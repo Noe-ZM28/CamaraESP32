@@ -2,14 +2,19 @@ import cv2
 import pytesseract
 
 # Cargar el video desde el archivo
-video_path = 'video.mp4'
+video_path = 'videos/v8.mp4'
 cap = cv2.VideoCapture(video_path)
 
 reader = pytesseract.image_to_string
 
 real_plate = None
 
-PLATES = ["A-522-JME", "A522JME", "A 522 JME"]
+PLATES = ["A-522-JME", "LD-73-546", "Lf-55-593"]
+
+window_size = (1040, 680)
+
+rect_width = 600
+rect_height = 300
 
 while cap.isOpened():
     plate = ""
@@ -19,8 +24,7 @@ while cap.isOpened():
         continue
 
     # Dimensiones y posición del recuadro rojo en el centro
-    rect_width = 600
-    rect_height = 300
+
     rect_x = (frame.shape[1] - rect_width) // 2
     rect_y = (frame.shape[0] - rect_height) // 2
 
@@ -78,7 +82,7 @@ while cap.isOpened():
                 print(plate_text)
 
     # Redimensionar el frame para mostrarlo en una ventana más pequeña
-    resized_frame = cv2.resize(frame, (640, 480))
+    resized_frame = cv2.resize(frame, window_size)
 
     # Mostrar el frame con el recuadro rojo, rectángulos y el texto de las placas
     cv2.imshow('Video con Placas', resized_frame)
