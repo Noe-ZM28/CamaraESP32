@@ -46,7 +46,7 @@ while cap.isOpened():
     blurred_roi = cv2.GaussianBlur(gray_roi, (5, 5), 0)
 
     # Aplicar la detección de bordes con Canny
-    edges = cv2.Canny(blurred_roi, threshold1=50, threshold2=150)
+    edges = cv2.Canny(blurred_roi, threshold1=100, threshold2=200)
 
     # Encontrar los contornos en el área de interés
     contours, _ = cv2.findContours(edges.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
