@@ -47,8 +47,11 @@ while cap.isOpened():
                 # Dibujar el texto de la placa en el frame original
                 cv2.putText(frame, 'Placa: ' + plate_text, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
-    # Mostrar el frame con los rectángulos y el texto de las placas
-    cv2.imshow('Video con Placas', frame)
+    # Redimensionar el frame para mostrarlo en una ventana más pequeña
+    resized_frame = cv2.resize(frame, (640, 480))
+
+    # Mostrar el frame redimensionado con los rectángulos y el texto de las placas
+    cv2.imshow('Video con Placas', resized_frame)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
