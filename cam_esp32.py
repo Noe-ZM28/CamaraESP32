@@ -1,16 +1,23 @@
 import cv2
 import pytesseract
 
-# Cargar el video desde el archivo (ajusta la ruta según tu archivo)
+# Cargar el video desde el archivo 
 video_path = 'video.mp4'
 cap = cv2.VideoCapture(video_path)
 
 reader = pytesseract.image_to_string
 
+real_plate=None
+
+PLATES = ["A-522-JME", "A522JME", "A 522 JME"]
+
 while cap.isOpened():
+    plate = ""
     ret, frame = cap.read()
     if not ret:
-        break
+        print("error")
+        continue
+        #break
 
     # Convertir el frame a escala de grises
     gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -32,20 +39,33 @@ while cap.isOpened():
         # Si el contorno tiene cuatro vértices (rectángulo)
         if len(approx) == 4:
             x, y, w, h = cv2.boundingRect(approx)
+            if w < h:
+                # print("es mas largo que ancho")
+                continue
 
-            # Descartar rectángulos muy pequeños
-            if w > 150 and h > 20:
+            # Descartar rectángulos muy pequeños y los que sean más largos que anchos
+            aspect_ratio = w / float(h)
+            if (w > 150 and h > 50) and (aspect_ratio <= 2.5) and (aspect_ratio >= 0.5):
                 # Recortar y procesar el área de la placa
                 plate_image = gray_frame[y:y + h, x:x + w]
 
                 # Aplicar OCR con Tesseract al área de la placa
                 plate_text = reader(plate_image, config='--psm 8')
+                long_plate_text = len(plate_text)
+
+                if long_plate_text < 5:
+                    continue
 
                 # Dibujar el rectángulo del área de la placa en el frame original
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
                 # Dibujar el texto de la placa en el frame original
                 cv2.putText(frame, 'Placa: ' + plate_text, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+
+                if plate_text in PLATES:
+                    print("*"*50)
+                    print("Funciona!")
+                print(plate_text)
 
     # Redimensionar el frame para mostrarlo en una ventana más pequeña
     resized_frame = cv2.resize(frame, (640, 480))
