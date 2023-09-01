@@ -44,8 +44,11 @@ while True:
         # Aplicar un filtro gaussiano para reducir el ruido y mejorar la detección del texto
         blurred_roi = cv2.GaussianBlur(gray_roi, (5, 5), 0)
 
+        # Aplicar un filtro de nitidez para mejorar la nitidez de la imagen
+        sharpened_roi = cv2.filter2D(blurred_roi, -1, np.array([[-1, -1, -1], [-1, 9, -1], [-1, -1, -1]]))
+
         # Aplicar la detección de bordes con Canny
-        edges = cv2.Canny(blurred_roi, threshold1=100, threshold2=200)
+        edges = cv2.Canny(sharpened_roi, threshold1=100, threshold2=200)
 
         # Encontrar los contornos en el área de interés
         contours, _ = cv2.findContours(edges.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -61,7 +64,7 @@ while True:
                 break  # Salir del bucle si ya se ha detectado un rectángulo
 
             # Si el contorno tiene cuatro vértices (rectángulo)
-            if len(approx) !=4:
+            if len(approx) != 4:
                 continue
 
             x, y, w, h = cv2.boundingRect(approx)
@@ -87,9 +90,10 @@ while True:
 
                 # Dibujar el texto de la placa sobre el recuadro rojo
                 cv2.putText(frame, f'Texto: {plate_text}', (rect_x, rect_y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-                real_txt_plate = plate_text
 
-                print(plate_text)
+                real_txt_plate = str(plate_text)
+
+                print(real_txt_plate)
                 rectangle_detected = True
 
         # Redimensionar el frame para mostrarlo en una ventana más pequeña
