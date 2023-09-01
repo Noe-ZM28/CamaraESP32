@@ -14,6 +14,8 @@ window_size = (1040, 680)
 rect_width = 600
 rect_height = 300
 
+rect_x = 212
+rect_y = 234
 
 bytes = bytes()
 while True:
@@ -27,10 +29,6 @@ while True:
             continue
 
         frame = cv2.imdecode(np.frombuffer(jpg, dtype=np.uint8), cv2.IMREAD_COLOR)
-
-        # Dimensiones y posición del recuadro rojo en el centro
-        rect_x = (frame.shape[1] - rect_width) // 2
-        rect_y = (frame.shape[0] - rect_height) // 2
 
         # Dibujar el recuadro rojo en el centro del frame
         cv2.rectangle(frame, (rect_x, rect_y), (rect_x + rect_width, rect_y + rect_height), (0, 0, 255), 2)
