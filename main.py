@@ -102,8 +102,38 @@ class LicensePlateDetector:
             str: Texto de la placa de matrícula.
         """
         return self.real_txt_plate
+    
+import cv2
+import requests
+import numpy as np
 
 if __name__ == "__main__":
-    video_path = 'videos/v4.mp4'  # Selecciona el video que deseas procesar
-    detector = LicensePlateDetector(video_path)
-    detector.run()
+    # Aquí puedes proporcionar la URL de la cámara ESP32
+    camera_url = 'http://192.168.1.227'
+
+    detector = LicensePlateDetector(None)  # Pasamos None ya que no usaremos un archivo de video
+
+    while True:
+        response = requests.get(camera_url, stream=True)
+
+        if response.status_code == 200:
+            bytes_data = bytes()
+            for chunk in response.iter_content(chunk_size=1024):
+                bytes_data += chunk
+                a = bytes_data.find(b'\xff\xd8')
+                b = bytes_data.find(b'\xff\xd9')
+                if a != -1 and b != -1:
+                    jpg = bytes_data[a:b + 2]
+                    bytes_data = bytes_data[b + 2:]
+                    frame = cv2.imdecode(np.frombuffer(jpg, dtype=np.uint8), cv2.IMREAD_COLOR)
+                    if frame is not None:
+                        processed_frame = detector.process_frame(frame)
+                        resized_frame = cv2.resize(processed_frame, detector.window_size)
+                        cv2.imshow('Video con Placas', resized_frame)
+        else:
+            print("Error al obtener el flujo de video")
+
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+    cv2.destroyAllWindows()
