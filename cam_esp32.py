@@ -9,8 +9,6 @@ reader = pytesseract.image_to_string
 
 real_txt_plate = None
 
-PLATES = ["A-522-JME", "LD-73-546", "LF-55-593"]
-
 window_size = (1040, 680)
 
 rect_width = 600
@@ -100,9 +98,9 @@ while True:
         # Mostrar el frame con el recuadro rojo, rectángulos y el texto de las placas
         cv2.imshow('ESP32 CAM', resized_frame)
 
-    if cv2.waitKey(1) & 0xff == ord('q'):
+    if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
-
-stream.release()
 cv2.destroyAllWindows()
+
+
