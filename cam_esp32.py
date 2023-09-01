@@ -14,8 +14,6 @@ reader = pytesseract.image_to_string
 
 real_txt_plate = None
 
-PLATES = ["A-522-JME", "LD-73-546", "LF-55-593"]
-
 window_size = (1040, 680)
 
 rect_width = 600
@@ -88,9 +86,7 @@ while cap.isOpened():
                 # Dibujar el texto de la placa sobre el recuadro rojo
                 cv2.putText(frame, f'Placa: {plate_text}', (rect_x, rect_y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
                 real_txt_plate = plate_text
-                if str(plate_text) in PLATES:
-                    print("*" * 50)
-                    print("Funciona!")
+
                 print(plate_text)
                 rectangle_detected = True
 
