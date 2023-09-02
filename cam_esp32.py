@@ -3,7 +3,8 @@ from urllib.request import urlopen
 import numpy as np
 import pytesseract
  
-stream = urlopen('http://192.168.1.227:81/stream')
+# stream = urlopen('http://192.168.1.227:81/stream') # IP OFICINA
+stream = urlopen('http://192.168.1.160:81/stream') # IP CASA
 
 reader = pytesseract.image_to_string
 
