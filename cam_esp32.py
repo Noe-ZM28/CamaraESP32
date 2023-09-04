@@ -10,13 +10,6 @@ reader = pytesseract.image_to_string
 
 real_txt_plate = None
 
-window_size = (320, 240)
-
-rect_width = 175
-rect_height = 100
-
-rect_x = 75
-rect_y = 100
 
 bytes = bytes()
 while True:
@@ -30,16 +23,6 @@ while True:
             continue
 
         frame = cv2.imdecode(np.frombuffer(jpg, dtype=np.uint8), cv2.IMREAD_COLOR)
-
-        # # Dimensiones y posición del recuadro rojo en el centro
-        # rect_x = (frame.shape[1] - rect_width) // 2
-        # rect_y = (frame.shape[0] - rect_height) // 2
-
-        # # Dibujar el recuadro rojo en el centro del frame
-        # cv2.rectangle(frame, (rect_x, rect_y), (rect_x + rect_width, rect_y + rect_height), (0, 0, 255), 2)
-
-        # Recortar el área de interés (rectángulo rojo) de la imagen
-        # roi = frame[rect_y:rect_y + rect_height, rect_x:rect_x + rect_width]
 
         # Convertir el área de interés a escala de grises
         gray_roi = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -76,7 +59,11 @@ while True:
                 continue
 
             aspect_ratio = w / float(h)
-            if (w > 150 and h > 50) and (aspect_ratio <= 2.5) and (aspect_ratio >= 1):
+
+            # Descargar rectangulos pequeños
+            # if (w > 150 and h > 50):continue
+
+            if(aspect_ratio <= 3) and (aspect_ratio > 2):
                 # Recortar y procesar el área de la placa
                 plate_image = gray_roi[y:y + h, x:x + w]
 
@@ -89,22 +76,21 @@ while True:
                 long_plate_text = len(real_txt_plate)
 
                 #Si la cantidad de letras detectadas es menor a 8 pasa al siguiene Frame
-                if long_plate_text < 6:
+                if long_plate_text < 7:
                     continue
 
                 # Dibujar el rectángulo del área de la placa en el recuadro rojo
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
                 # Dibujar el texto de la placa sobre el recuadro rojo
-                cv2.putText(frame, f'Texto: {real_txt_plate}', (rect_x, rect_y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                cv2.putText(frame, f'Texto: {real_txt_plate}', (0, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2)
 
-
-                print(real_txt_plate+"\n")
+                print("Ancho: ", w)
+                print("Alto: ", h)
+                print("Relación: ", aspect_ratio)
+                print("Placa: ", real_txt_plate+"\n")
                 rectangle_detected = True
             else: continue
-
-        # Redimensionar el frame para mostrarlo en una ventana más pequeña
-        resized_frame = cv2.resize(frame, window_size)
 
         # Mostrar el frame con el recuadro rojo, rectángulos y el texto de las placas
         cv2.imshow('ESP32 CAM', frame)
