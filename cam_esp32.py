@@ -1,17 +1,13 @@
 import cv2
 from urllib.request import urlopen
 import numpy as np
-import pytesseract
+from pytesseract import image_to_string
  
 url = 'http://192.168.1.160:81/stream'
 stream = urlopen(url)
-
-reader = pytesseract.image_to_string
-
 real_txt_plate = None
-
-
 bytes = bytes()
+
 while True:
     bytes += stream.read(1024)
     a = bytes.find(b'\xff\xd8')
@@ -68,14 +64,14 @@ while True:
                 plate_image = gray_roi[y:y + h, x:x + w]
 
                 # Aplicar OCR con Tesseract al área de la placa
-                plate_text = reader(plate_image, config='--psm 8')
+                plate_text = image_to_string(plate_image, config='--psm 8')
 
                 # Se convierte la respuesta de Tesseract a texto y  se eliminan los saltos de linea o u utros caracteres especiales
                 real_txt_plate = str(plate_text).strip()
 
                 long_plate_text = len(real_txt_plate)
 
-                #Si la cantidad de letras detectadas es menor a 8 pasa al siguiene Frame
+                #Si la cantidad de letras detectadas es menor a 7 pasa al siguiene Frame
                 if long_plate_text < 7:
                     continue
 
@@ -90,7 +86,6 @@ while True:
                 print("Relación: ",aspect_ratio)
                 print("Placa: ",real_txt_plate+"\n")
                 rectangle_detected = True
-
 
         # Mostrar el frame con el recuadro rojo, rectángulos y el texto de las placas
         cv2.imshow('ESP32 CAM', frame)
