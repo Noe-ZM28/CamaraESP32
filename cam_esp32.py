@@ -3,8 +3,8 @@ from urllib.request import urlopen
 import numpy as np
 import pytesseract
  
-# stream = urlopen('http://192.168.1.227:81/stream') # IP OFICINA
-stream = urlopen('http://192.168.1.160:81/stream') # IP CASA
+url = 'http://192.168.1.160:81/stream'
+stream = urlopen(url)
 
 reader = pytesseract.image_to_string
 
@@ -85,12 +85,12 @@ while True:
                 # Dibujar el texto de la placa sobre el recuadro rojo
                 cv2.putText(frame, f'Texto: {real_txt_plate}', (0, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2)
 
-                print("Ancho: ", w)
-                print("Alto: ", h)
-                print("Relación: ", aspect_ratio)
-                print("Placa: ", real_txt_plate+"\n")
+                print("Ancho: ",w)
+                print("Alto: ",h)
+                print("Relación: ",aspect_ratio)
+                print("Placa: ",real_txt_plate+"\n")
                 rectangle_detected = True
-            else: continue
+
 
         # Mostrar el frame con el recuadro rojo, rectángulos y el texto de las placas
         cv2.imshow('ESP32 CAM', frame)
