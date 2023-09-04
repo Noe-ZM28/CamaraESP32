@@ -35,14 +35,14 @@ while True:
         # rect_x = (frame.shape[1] - rect_width) // 2
         # rect_y = (frame.shape[0] - rect_height) // 2
 
-        # Dibujar el recuadro rojo en el centro del frame
-        cv2.rectangle(frame, (rect_x, rect_y), (rect_x + rect_width, rect_y + rect_height), (0, 0, 255), 2)
+        # # Dibujar el recuadro rojo en el centro del frame
+        # cv2.rectangle(frame, (rect_x, rect_y), (rect_x + rect_width, rect_y + rect_height), (0, 0, 255), 2)
 
         # Recortar el área de interés (rectángulo rojo) de la imagen
-        roi = frame[rect_y:rect_y + rect_height, rect_x:rect_x + rect_width]
+        # roi = frame[rect_y:rect_y + rect_height, rect_x:rect_x + rect_width]
 
         # Convertir el área de interés a escala de grises
-        gray_roi = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
+        gray_roi = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
         # Aplicar un filtro gaussiano para reducir el ruido y mejorar la detección del texto
         blurred_roi = cv2.GaussianBlur(gray_roi, (5, 5), 0)
@@ -89,7 +89,7 @@ while True:
                     continue
 
                 # Dibujar el rectángulo del área de la placa en el recuadro rojo
-                cv2.rectangle(frame, (rect_x + x, rect_y + y), (rect_x + x + w, rect_y + y + h), (0, 255, 0), 2)
+                cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
                 # Dibujar el texto de la placa sobre el recuadro rojo
                 cv2.putText(frame, f'Texto: {plate_text}', (rect_x, rect_y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
