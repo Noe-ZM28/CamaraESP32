@@ -10,13 +10,13 @@ reader = pytesseract.image_to_string
 
 real_txt_plate = None
 
-window_size = (1040, 680)
+window_size = (320, 240)
 
-rect_width = 600
-rect_height = 300
+rect_width = 175
+rect_height = 100
 
-rect_x = 212
-rect_y = 234
+rect_x = 75
+rect_y = 100
 
 bytes = bytes()
 while True:
@@ -30,6 +30,10 @@ while True:
             continue
 
         frame = cv2.imdecode(np.frombuffer(jpg, dtype=np.uint8), cv2.IMREAD_COLOR)
+
+        # # Dimensiones y posición del recuadro rojo en el centro
+        # rect_x = (frame.shape[1] - rect_width) // 2
+        # rect_y = (frame.shape[0] - rect_height) // 2
 
         # Dibujar el recuadro rojo en el centro del frame
         cv2.rectangle(frame, (rect_x, rect_y), (rect_x + rect_width, rect_y + rect_height), (0, 0, 255), 2)
@@ -99,9 +103,11 @@ while True:
         resized_frame = cv2.resize(frame, window_size)
 
         # Mostrar el frame con el recuadro rojo, rectángulos y el texto de las placas
-        cv2.imshow('ESP32 CAM', resized_frame)
+        cv2.imshow('ESP32 CAM', frame)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
 cv2.destroyAllWindows()
+
+
