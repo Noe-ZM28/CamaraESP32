@@ -82,22 +82,26 @@ while True:
 
                 # Aplicar OCR con Tesseract al área de la placa
                 plate_text = reader(plate_image, config='--psm 8')
-                long_plate_text = len(plate_text)
+
+                # Se convierte la respuesta de Tesseract a texto y  se eliminan los saltos de linea o u utros caracteres especiales
+                real_txt_plate = str(plate_text).strip()
+
+                long_plate_text = len(real_txt_plate)
 
                 #Si la cantidad de letras detectadas es menor a 8 pasa al siguiene Frame
-                if long_plate_text < 5:
+                if long_plate_text < 6:
                     continue
 
                 # Dibujar el rectángulo del área de la placa en el recuadro rojo
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
                 # Dibujar el texto de la placa sobre el recuadro rojo
-                cv2.putText(frame, f'Texto: {plate_text}', (rect_x, rect_y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                cv2.putText(frame, f'Texto: {real_txt_plate}', (rect_x, rect_y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
-                real_txt_plate = str(plate_text)
 
-                print(real_txt_plate)
+                print(real_txt_plate+"\n")
                 rectangle_detected = True
+            else: continue
 
         # Redimensionar el frame para mostrarlo en una ventana más pequeña
         resized_frame = cv2.resize(frame, window_size)
