@@ -67,9 +67,9 @@ while True:
                 plate_text = image_to_string(plate_image, config='--psm 8')
 
                 # Se convierte la respuesta de Tesseract a texto y  se eliminan los saltos de linea o u utros caracteres especiales
-                real_txt_plate = str(plate_text).strip()
+                txt_plate = str(plate_text).strip()
 
-                long_plate_text = len(real_txt_plate)
+                long_plate_text = len(txt_plate)
 
                 #Si la cantidad de letras detectadas es menor a 7 pasa al siguiene Frame
                 if long_plate_text < 7:
@@ -77,6 +77,9 @@ while True:
 
                 # Dibujar el rectángulo del área de la placa en el recuadro rojo
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
+                # Se actualiza valor
+                real_txt_plate = txt_plate
 
                 # Dibujar el texto de la placa sobre el recuadro rojo
                 cv2.putText(frame, f'Texto: {real_txt_plate}', (0, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2)
@@ -91,8 +94,8 @@ while True:
         cv2.imshow('ESP32 CAM', frame)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
+        cv2.destroyAllWindows()
         break
 
-cv2.destroyAllWindows()
 
 
