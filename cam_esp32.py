@@ -2,11 +2,8 @@ import cv2
 import pytesseract
 
 # Cargar el video desde el archivo
-video_path = 'videos/v4.mp4' # Buena calidad, se renderiza rapido
-# video_path = 'videos/v6.mp4' # Pesima calidad, se traba
-# video_path = 'videos/v9.mp4' # No graba nada
-# video_path = 'videos/v10.mp4' # casi
-# video_path = 'videos/v11.mp4' # Bien
+video_path = 'videos/v4.mp4'
+
 
 cap = cv2.VideoCapture(video_path)
 
@@ -101,4 +98,6 @@ while cap.isOpened():
 
 cap.release()
 cv2.destroyAllWindows()
+
+
 
