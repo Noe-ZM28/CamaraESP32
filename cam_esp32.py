@@ -23,11 +23,11 @@ class ProcessFrame:
         contours, _ = cv2.findContours(edges.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         if show:
-            cv2.imshow('Imagen Original', frame)
-            cv2.imshow('Imagen en Escala de Grises', gray_roi)
-            cv2.imshow('Imagen con Filtro Gaussiano', blurred_roi)
-            cv2.imshow('Imagen con Filtro de Nitidez', sharpened_roi)
-            cv2.imshow('Imagen con Detección de Bordes', edges)
+            cv2.imshow('Original', frame)
+            cv2.imshow('Escala de Grises', gray_roi)
+            cv2.imshow('Filtro Gaussiano', blurred_roi)
+            cv2.imshow('Filtro de Nitidez', sharpened_roi)
+            cv2.imshow('Detección de Bordes', edges)
 
         return contours, frame_proceed
 
