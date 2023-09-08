@@ -7,7 +7,7 @@ from pytesseract import image_to_string
 class ProcessFrame:
     def __init_(self):...
 
-    def process_frame(self, frame:ndarray) -> list:
+    def process_frame(self, frame: np.ndarray, show:bool = False) -> list:
         # Convertir el área de interés a escala de grises
         gray_roi = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
@@ -24,6 +24,13 @@ class ProcessFrame:
         # Encontrar los contornos en el área de interés
         contours, _ = cv2.findContours(edges.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
+        if show:
+            cv2.imshow('Imagen Original', frame)
+            cv2.imshow('Imagen en Escala de Grises', gray_roi)
+            cv2.imshow('Imagen con Filtro Gaussiano', blurred_roi)
+            cv2.imshow('Imagen con Filtro de Nitidez', sharpened_roi)
+            cv2.imshow('Imagen con Detección de Bordes', edges)
+        
         return contours, frame_proceed
 
 class CleanData:
@@ -34,15 +41,20 @@ class CleanData:
         tablae_traduction = str.maketrans("", "", strange_caracteres)
 
         return txt_to_clean.translate(tablae_traduction)
-    
+
     def image_to_txt(self, image:ndarray, config:str= '--psm 8', line_break:bool = True) -> str:
-        # Aplicar OCR con Tesseract al área de la placa
-        txt = image_to_string(image, config=config)
+        try:
+            # Aplicar OCR con Tesseract al área de la placa
+            txt = image_to_string(image, config=config)
 
-        # Se convierte la respuesta de Tesseract a texto y  se eliminan los saltos de linea o u utros caracteres especiales
-        txt_image = str(txt).strip()
+            # Se convierte la respuesta de Tesseract a texto y se eliminan los saltos de linea o u utros caracteres especiales asi como espacios en blanco
+            txt_image = str(txt).strip().replace(" ", "")
 
-        return txt_image+"\n" if line_break else txt_image
+            return txt_image+"\n" if line_break else txt_image
+
+        except Exception as e:
+            return "None"
+
 p_frame = ProcessFrame()
 
 clean = CleanData()
@@ -97,18 +109,21 @@ while True:
 
         if(aspect_ratio <= 3) and (aspect_ratio > 2):
             # Recortar y procesar el área de la placa
-            plate_image = frame_proceed[y:y + h, x:x + w]
+            plate_image = frame_proceed[y-5:y + h+5, x-5:x + w+5]
 
             txt_plate = clean.image_to_txt(plate_image)
+
+            if txt_plate[0].islower():
+                continue
 
             #Si la cantidad de letras detectadas es menor a 7 o la cantidad de guines es menor a 1 pasa al siguiene Frame 
             if len(txt_plate) < 7 or txt_plate.count("-") < 1:
                 continue
-
+            cv2.imshow('plate_image', plate_image)
             clean_txt_plate = clean.remove_strange_caracteres(txt_plate)
 
             # Dibujar el rectángulo del área de la placa en el recuadro rojo
-            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            cv2.rectangle(frame, (x-5, y-5), (x + w+5, y + h+5), (0, 255, 0), 2)
 
             # Se actualiza valor
             real_txt_plate = clean_txt_plate
