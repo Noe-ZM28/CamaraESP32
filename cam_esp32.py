@@ -5,9 +5,7 @@ from numpy import ndarray
 from pytesseract import image_to_string
 
 class ProcessFrame:
-    def __init_(self):...
-
-    def process_frame(self, frame: np.ndarray, show:bool = False) -> list:
+    def process_frame(self, frame:ndarray, show:bool = False) -> list:
         # Convertir el área de interés a escala de grises
         gray_roi = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
@@ -30,57 +28,68 @@ class ProcessFrame:
             cv2.imshow('Imagen con Filtro Gaussiano', blurred_roi)
             cv2.imshow('Imagen con Filtro de Nitidez', sharpened_roi)
             cv2.imshow('Imagen con Detección de Bordes', edges)
-        
+
         return contours, frame_proceed
 
 class CleanData:
-    def __init_(self):...
-
-    def remove_strange_caracteres(self, txt_to_clean:str, strange_caracteres:str = "|[]{}()") -> str:
+    def remove_strange_caracteres(self, txt_to_clean: str, strange_caracteres: str = "|[]{}()") -> str:
         # Crear una tabla de traducción que mapea cada carácter a None (eliminar)
         tablae_traduction = str.maketrans("", "", strange_caracteres)
 
         return txt_to_clean.translate(tablae_traduction)
 
-    def image_to_txt(self, image:ndarray, config:str= '--psm 8', line_break:bool = True) -> str:
+    def image_to_txt(self, image: np.ndarray, config: str = '--psm 8', line_break: bool = True) -> str:
         try:
             # Aplicar OCR con Tesseract al área de la placa
             txt = image_to_string(image, config=config)
 
-            # Se convierte la respuesta de Tesseract a texto y se eliminan los saltos de linea o u utros caracteres especiales asi como espacios en blanco
+            # Se convierte la respuesta de Tesseract a texto y se eliminan los saltos de linea u otros caracteres especiales, así como espacios en blanco
             txt_image = str(txt).strip().replace(" ", "")
 
-            return txt_image+"\n" if line_break else txt_image
+            return txt_image + "\n" if line_break else txt_image
 
         except Exception as e:
             return "None"
 
+class GetFrame:
+    def __init__(self, url):
+        self.stream = urlopen(url)
+
+    def get_frame(self, bytes_buffer):
+        try:
+            bytes_buffer += self.stream.read(1024)
+            a = bytes_buffer.find(b'\xff\xd8')
+            b = bytes_buffer.find(b'\xff\xd9')
+
+            if a == -1 or b == -1:
+                return None, bytes_buffer
+
+            jpg = bytes_buffer[a:b+2]
+            bytes_buffer = bytes_buffer[b+2:]
+
+            if not jpg:
+                return None, bytes_buffer
+
+            frame = cv2.imdecode(np.frombuffer(jpg, dtype=np.uint8), cv2.IMREAD_COLOR)
+
+            return frame, bytes_buffer
+        except Exception as e:
+            print(f"Error al obtener el cuadro de la URL: {str(e)}")
+            return None, bytes_buffer
+
 p_frame = ProcessFrame()
-
 clean = CleanData()
-
 url = 'http://192.168.1.160:81/stream'
-stream = urlopen(url)
-real_txt_plate = None
-bytes = bytes()
+frame_class = GetFrame(url)
+bytes_buffer=bytes()
 
 while True:
-    bytes += stream.read(1024)
-    a = bytes.find(b'\xff\xd8')
-    b = bytes.find(b'\xff\xd9')
+    frame, bytes_buffer = frame_class.get_frame(bytes_buffer)
 
-    if a == -1 and b == -1:
+    if frame is None:
         continue
 
-    jpg = bytes[a:b+2]
-    bytes = bytes[b+2:]
-
-    if not jpg:
-        continue
-
-    frame = cv2.imdecode(np.frombuffer(jpg, dtype=np.uint8), cv2.IMREAD_COLOR)
-
-    contours, frame_proceed =  p_frame.process_frame(frame)
+    contours, frame_proceed =  p_frame.process_frame(frame, True)
 
     # Variable para rastrear si se ha detectado un rectángulo en este frame
     rectangle_detected = False
