@@ -5,7 +5,18 @@ from numpy import ndarray
 from pytesseract import image_to_string
 
 class ProcessFrame:
-    def process_frame(self, frame:ndarray, show:bool = False) -> list:
+    """Clase para procesar frames de imagen."""
+    def process_frame(self, frame: ndarray, show: bool = False) -> list:
+        """
+        Procesa un frame de imagen para mejorar la detección de texto.
+
+        Args:
+            frame (ndarray): El frame de imagen a procesar.
+            show (bool): Indica si mostrar ventanas de depuración.
+
+        Returns:
+            list: Contornos encontrados y frame procesado.
+        """
         # Convertir el área de interés a escala de grises
         gray_roi = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
@@ -32,18 +43,40 @@ class ProcessFrame:
         return contours, frame_proceed
 
 class CleanData:
+    """Clase para limpiar datos de texto."""
     def remove_strange_caracteres(self, txt_to_clean: str, strange_caracteres: str = "|[]{}()") -> str:
+        """
+        Elimina caracteres extraños de una cadena de texto.
+
+        Args:
+            txt_to_clean (str): La cadena de texto a limpiar.
+            strange_caracteres (str): Caracteres extraños a eliminar.
+
+        Returns:
+            str: La cadena de texto sin caracteres extraños.
+        """
         # Crear una tabla de traducción que mapea cada carácter a None (eliminar)
         tablae_traduction = str.maketrans("", "", strange_caracteres)
 
         return txt_to_clean.translate(tablae_traduction)
 
     def image_to_txt(self, image: np.ndarray, config: str = '--psm 8', line_break: bool = True) -> str:
+        """
+        Convierte una imagen en texto utilizando OCR (Optical Character Recognition).
+
+        Args:
+            image (np.ndarray): La imagen de entrada.
+            config (str): Opciones de configuración para el OCR.
+            line_break (bool): Indica si agregar un salto de línea al resultado.
+
+        Returns:
+            str: El texto extraído de la imagen.
+        """
         try:
             # Aplicar OCR con Tesseract al área de la placa
             txt = image_to_string(image, config=config)
 
-            # Se convierte la respuesta de Tesseract a texto y se eliminan los saltos de linea u otros caracteres especiales, así como espacios en blanco
+            # Se convierte la respuesta de Tesseract a texto y se eliminan los saltos de línea u otros caracteres especiales, así como espacios en blanco
             txt_image = str(txt).strip().replace(" ", "")
 
             return txt_image + "\n" if line_break else txt_image
@@ -52,10 +85,27 @@ class CleanData:
             return "None"
 
 class GetFrame:
-    def __init__(self, url):
+    """Clase para obtener frames de video desde una URL."""
+
+    def __init__(self, url:str) -> str:
+        """
+        Inicializa la instancia de GetFrame.
+
+        Args:
+            url (str): La URL del video de la que se obtendrán los frames.
+        """
         self.stream = urlopen(url)
 
     def get_frame(self, bytes_buffer):
+        """
+        Obtiene un frame de video desde una URL.
+
+        Args:
+            bytes_buffer: Un búfer de bytes para almacenar datos.
+
+        Returns:
+            tuple: El frame de imagen y el búfer de bytes actualizado.
+        """
         try:
             bytes_buffer += self.stream.read(1024)
             a = bytes_buffer.find(b'\xff\xd8')
@@ -81,7 +131,7 @@ p_frame = ProcessFrame()
 clean = CleanData()
 url = 'http://192.168.1.160:81/stream'
 frame_class = GetFrame(url)
-bytes_buffer=bytes()
+bytes_buffer = bytes()
 
 while True:
     frame, bytes_buffer = frame_class.get_frame(bytes_buffer)
@@ -89,7 +139,7 @@ while True:
     if frame is None:
         continue
 
-    contours, frame_proceed =  p_frame.process_frame(frame, True)
+    contours, frame_proceed = p_frame.process_frame(frame, True)
 
     # Variable para rastrear si se ha detectado un rectángulo en este frame
     rectangle_detected = False
