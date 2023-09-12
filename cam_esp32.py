@@ -34,11 +34,11 @@ class ProcessFrame:
         contours, _ = cv2.findContours(edges.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         if show:
-            cv2.imshow('Original', frame)
-            cv2.imshow('Escala de Grises', gray_roi)
-            cv2.imshow('Filtro Gaussiano', blurred_roi)
-            cv2.imshow('Filtro de Nitidez', sharpened_roi)
-            cv2.imshow('Detección de Bordes', edges)
+            cv2.imshow('Original', 1)
+            cv2.imshow('Escala de Grises', 2)
+            cv2.imshow('Filtro Gaussiano', 3)
+            cv2.imshow('Filtro de Nitidez', 4)
+            cv2.imshow('Detección de Bordes', 5)
 
         return contours, frame_proceed
 
@@ -207,6 +207,8 @@ def run(url, show_process, show_plate):
 
 show_process_frame = True
 show_plate = True
-URL = 'http://192.168.1.160:81/stream'
+ip = "192.168.1.160"
+ip = "192.168.1.227"
+URL = f'http://{ip}:81/stream'
 
 run(URL, show_process_frame, show_plate)
