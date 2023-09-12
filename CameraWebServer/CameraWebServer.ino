@@ -36,8 +36,10 @@
 // Enter your WiFi credentials
 // ===========================
 
+// WIFI OFICINA
 const char* ssid = "INFINITUMD635_2.4";
 const char* password = "9548833908";
+
 
 
 void startCameraServer();
