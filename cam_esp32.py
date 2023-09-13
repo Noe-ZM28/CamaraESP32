@@ -205,7 +205,7 @@ def run(url, show_process, show_plate):
             cv2.destroyAllWindows()
             break
 
-show_process_frame = True
+show_process_frame = False
 show_plate = True
 ip = "192.168.1.160"
 ip = "192.168.1.227"
