@@ -7,11 +7,11 @@ import cv2
 def run(url, show_process, show_plate):
     p_frame = ProcessFrame()
     clean = CleanData()
-    frame_class = GetFrame(url)
+    frame_class = GetFrame(url=url)
     bytes_buffer = bytes()
 
     while True:
-        frame, bytes_buffer = frame_class.get_frame(bytes_buffer)
+        frame, bytes_buffer = frame_class.get_frame_from_url(bytes_buffer)
 
         if frame is None:
             continue

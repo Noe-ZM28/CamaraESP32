@@ -1,20 +1,29 @@
 import cv2
 from urllib.request import urlopen
 import numpy as np
+from tools import Tools
 
 class GetFrame:
     """Clase para obtener frames de video desde una URL."""
+    def __init__(self, **kwargs) -> None:
+        tools_instance = Tools()
 
-    def __init__(self, url:str) -> str:
-        """
-        Inicializa la instancia de GetFrame.
+        if str(kwargs["path_image"]):
+            tools_instance.validate_image(str(kwargs["path_image"]))
 
-        Args:
-            url (str): La URL del video de la que se obtendrán los frames.
-        """
-        self.stream = urlopen(url)
+        if str(kwargs["url"]).startswith('http'):
+            self.stream = urlopen(kwargs["url"])
 
-    def get_frame(self, bytes_buffer):
+    def get_frame_from_image(self, image_path: str):
+        try:
+            frame = cv2.imread(image_path)
+            return frame
+        except Exception as e:
+            print(f"Error al cargar la imagen: {str(e)}")
+            return None
+
+
+    def get_frame_from_url(self, bytes_buffer):
         """
         Obtiene un frame de video desde una URL.
 
