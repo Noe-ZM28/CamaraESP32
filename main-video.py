@@ -1,4 +1,4 @@
-from process_image.get_frame import GetFrame
+from process_image.get_frame import GetFrameFromvideo
 from process_image.process_frame import ProcessFrame
 from process_image.process_text import CleanData
 
@@ -7,11 +7,11 @@ import cv2
 def run(url, show_process, show_plate):
     p_frame = ProcessFrame()
     clean = CleanData()
-    frame_class = GetFrame(url=url)
+    frame_class = GetFrameFromvideo(url=url)
     bytes_buffer = bytes()
 
     while True:
-        frame, bytes_buffer = frame_class.get_frame_from_url(bytes_buffer)
+        frame, bytes_buffer = frame_class.get_frame(bytes_buffer)
 
         if frame is None:
             continue
