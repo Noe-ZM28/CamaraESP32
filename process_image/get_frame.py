@@ -48,13 +48,12 @@ class GetFrameFromvideo:
 
 class GetFrameFromImage:
     def __init__(self):
-        self.tools_intatance = Tools
+        self.tools_intatance = Tools()
 
-    def get_frame(self, image_path: str):
+    def get_frame(self, path_image: str):
         try:
-            if self.tools_intatance.validate_image(image_path):
-                frame = cv2.imread(image_path)
-                return frame
+            return cv2.imread(path_image) if self.tools_intatance.validate_image(path_image=path_image) else False
+
         except Exception as e:
             print(f"Error al cargar la imagen: {str(e)}")
             return None
