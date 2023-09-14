@@ -1,19 +1,20 @@
-from process_image.get_frame import GetFrame
+from process_image.get_frame import GetFrameFromImage
 from process_image.process_frame import ProcessFrame
 from process_image.process_text import CleanData
 
 import cv2
 
-def run(url, show_process, show_plate):
+def run(path_image, show_process, show_plate):
     p_frame = ProcessFrame()
     clean = CleanData()
-    frame_class = GetFrame(url=url)
-    bytes_buffer = bytes()
+    frame_class = GetFrameFromImage()
+# while True: 
 
-    frame, bytes_buffer = frame_class.get_frame_from_url(bytes_buffer)
+    frame = frame_class.get_frame(path_image)
+
 
     if frame is None:
-        continue
+        return
 
     contours, frame_proceed = p_frame.process_frame(frame, show_process)
 
@@ -76,14 +77,11 @@ def run(url, show_process, show_plate):
     # Mostrar el frame con el recuadro rojo, rectángulos y el texto de las placas
     cv2.imshow('ESP32 CAM', frame)
 
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        cv2.destroyAllWindows()
-        break
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
 show_process_frame = False
-show_plate = True
-ip = "192.168.1.160"
-# ip = "192.168.1.227"
-URL = f'http://{ip}:81/stream'
+show_plate = False
+path_image= 'img/b.jpg'
 
-run(URL, show_process_frame, show_plate)
+run(path_image, show_process_frame, show_plate)
