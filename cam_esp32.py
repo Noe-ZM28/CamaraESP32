@@ -212,3 +212,5 @@ ip = "192.168.1.227"
 URL = f'http://{ip}:81/stream'
 
 run(URL, show_process_frame, show_plate)
+
+
