@@ -4,6 +4,19 @@ from process_image.process_text import CleanData
 
 import cv2
 
+# Color verde
+color_green = (0, 255, 0)
+
+# Color rojo
+color_red = (0, 0, 255)
+
+# Grosor de la línea del rectángulo
+thickness = 2
+
+# Definir las dimensiones deseadas del ROI
+roi_width = 400
+roi_height = 200
+
 def run(path_image, show_process, show_plate):
     p_frame = ProcessFrame()
     clean = CleanData()
@@ -12,11 +25,20 @@ def run(path_image, show_process, show_plate):
 
     frame = frame_class.get_frame(path_image)
 
+    # Obtener las dimensiones del frame
+    frame_height, frame_width, _ = frame.shape
 
     if frame is None:
         return
 
-    contours, frame_proceed = p_frame.process_frame(frame, show_process)
+    # Calcular las coordenadas para que el ROI esté en el centro del frame
+    x_roi = (frame_width - roi_width) // 2  # Resta la mitad del ROI al ancho del frame
+    y_roi = (frame_height - roi_height) // 2  # Resta la mitad del ROI a la altura del frame
+
+    # Recortar el frame al área del ROI
+    roi = frame[y_roi:y_roi + roi_height, x_roi:x_roi + roi_width]
+
+    contours, frame_proceed = p_frame.process_frame(roi, show_process)
 
     # Variable para rastrear si se ha detectado un rectángulo en este frame
     rectangle_detected = False
@@ -59,14 +81,18 @@ def run(path_image, show_process, show_plate):
                 cv2.imshow('plate_image', plate_image)
             clean_txt_plate = clean.remove_strange_caracteres(txt_plate)
 
-            # Dibujar el rectángulo del área de la placa en el recuadro rojo
-            cv2.rectangle(frame, (x-5, y-5), (x + w+5, y + h+5), (0, 255, 0), 2)
+            # Dibujar el rectángulo del área de la placa
+            cv2.rectangle(frame, (x-5, y-5), (x + w+5, y + h+5), color_green, thickness)
+
+            # Dibujar el rectángulo del area de interes
+            cv2.rectangle(frame, (x_roi, y_roi), (x_roi + roi_width, y_roi + roi_height), color_red, thickness)
+
 
             # Se actualiza valor
             real_txt_plate = clean_txt_plate
 
             # Dibujar el texto de la placa sobre el recuadro rojo
-            cv2.putText(frame, f'Texto: {real_txt_plate}', (0, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2)
+            cv2.putText(frame, f'Texto: {real_txt_plate}', (0, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.75, color_green, 2)
 
             print("Ancho: ",w)
             print("Alto: ",h)
