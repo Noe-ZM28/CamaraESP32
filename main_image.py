@@ -85,3 +85,4 @@ show_plate = True
 path_image= 'img/1.jpg'
 
 run(path_image, show_process_frame, show_plate)
+
