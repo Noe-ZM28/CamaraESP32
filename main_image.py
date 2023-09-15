@@ -80,8 +80,8 @@ def run(path_image, show_process, show_plate):
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-show_process_frame = False
-show_plate = False
-path_image= 'img/b.jpg'
+show_process_frame = True
+show_plate = True
+path_image= 'img/1.jpg'
 
 run(path_image, show_process_frame, show_plate)
