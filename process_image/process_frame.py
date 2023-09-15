@@ -20,6 +20,8 @@ class ProcessFrame:
 
         # Aplicar un filtro gaussiano para reducir el ruido y mejorar la detección del texto
         blurred_roi = cv2.GaussianBlur(gray_roi, (5, 5), 0)
+        # Aplicar de nuevo el filtro
+        blurred_roi = cv2.GaussianBlur(blurred_roi, (5, 5), 0)
 
         # Aplicar un filtro de nitidez para mejorar la nitidez de la imagen
         sharpened_roi = cv2.filter2D(blurred_roi, -1, np.array([[-1, -1, -1], [-1, 9, -1], [-1, -1, -1]]))
@@ -32,12 +34,11 @@ class ProcessFrame:
         contours, _ = cv2.findContours(edges.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
         if show:
-            cv2.imshow('Original', 1)
-            cv2.imshow('Escala de Grises', 2)
-            cv2.imshow('Filtro Gaussiano', 3)
-            cv2.imshow('Filtro de Nitidez', 4)
-            cv2.imshow('Detección de Bordes', 5)
-
+            cv2.imshow('Original', frame)
+            cv2.imshow('Escala de Grises', gray_roi)
+            cv2.imshow('Filtro Gaussiano', blurred_roi)
+            cv2.imshow('Filtro de Nitidez', sharpened_roi)
+            cv2.imshow('Detección de Bordes', edges)
         return contours, frame_proceed
 
 
