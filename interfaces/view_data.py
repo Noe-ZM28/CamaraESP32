@@ -1,36 +1,70 @@
+import os
+import sys
+
+# Obtener el directorio raíz del proyecto
+proyecto_dir = os.getcwd()
+# Agregar el directorio raíz del proyecto al path de Python
+sys.path.append(proyecto_dir)
+
 import cv2
-import tkinter as tk
-from tkinter import filedialog
+from tkinter import Tk, Button, Label, LabelFrame
 from PIL import Image, ImageTk
 from process_image import get_frame
 
 class_get_image = get_frame.GetFrameFromImage()
 
 class panel_config:
+    def __init__(self) -> None:
+        # Crear la ventana principal
+        self.root = Tk()
+        self.root.title("OpenCV y Tkinter")
+    
+        main_frame = LabelFrame(self.root, text="Principal")
+        main_frame.grid(row = 0, column = 0, pady = 5)
+
+        image_frame = LabelFrame(main_frame, text="Imagen")
+        image_frame.grid(row = 0, column = 0, pady = 5)
+
+        self.image = Label(image_frame)
+        self.image.grid(row = 0, column = 0)
+        self.load_image()
+
+        config_frame = LabelFrame(main_frame,text="Configuración")
+        config_frame.grid(row = 0, column = 1, pady = 5)
+
+        boton_cargar = Button(config_frame, text="Cargar Imagen")
+        boton_cargar.grid()
+
+    def resize_image(self):
+        pass
+
     # Función para cargar una imagen usando OpenCV
-    def cargar_imagen(self):
-        img = './img/1.jpg'
+    def load_image(self, img:str = './img/tools/none_image.jpg'):
         frame = class_get_image.get_frame(img)
-        self.mostrar_imagen(frame)
+        if frame is None:
+            return
+        self.show_image(frame)
 
     # Función para mostrar una imagen en un widget Tkinter
-    def mostrar_imagen(self, imagen):
-        imagen = Image.fromarray(imagen)
-        imagen = ImageTk.PhotoImage(imagen)
-        self.label_imagen.config(image=imagen)
-        self.label_imagen.image = imagen
+    def show_image(self, frame):
+        frame = Image.fromarray(frame)
+        frame = ImageTk.PhotoImage(frame)
+        self.image.config(image=frame)
+        self.image.image = frame
 
-    # Crear la ventana principal
-    ventana = tk.Tk()
-    ventana.title("OpenCV y Tkinter")
 
-    # Botón para cargar una imagen
-    boton_cargar = tk.Button(ventana, text="Cargar Imagen", command=cargar_imagen)
-    boton_cargar.pack()
+    # def run(self):
 
-    # Etiqueta para mostrar la imagen
-    label_imagen = tk.Label(ventana)
-    label_imagen.pack()
+    #     # Botón para cargar una imagen
+    #     boton_cargar = Button(self.root, text="Cargar Imagen", command=self.load_image)
+    #     boton_cargar.grid()
 
-    ventana.mainloop()
+    #     # Etiqueta para mostrar la imagen
+    #     self.label_imagen = Label(self.root)
+    #     self.label_imagen.grid()
+
+        self.root.mainloop()
+
+a = panel_config()
+# a.run()
 

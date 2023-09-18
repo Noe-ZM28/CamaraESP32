@@ -52,7 +52,7 @@ class GetFrameFromImage:
 
     def get_frame(self, path_image: str):
         try:
-            return cv2.imread(path_image) if self.tools_intatance.validate_image(path_image=path_image) else False
+            return cv2.imread(path_image) if self.tools_intatance.validate_image(path_image=path_image) else None
 
         except Exception as e:
             print(f"Error al cargar la imagen: {str(e)}")
