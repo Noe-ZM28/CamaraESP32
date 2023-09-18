@@ -9,12 +9,15 @@ sys.path.append(proyecto_dir)
 import cv2
 from tkinter import Tk, Button, Label, LabelFrame
 from PIL import Image, ImageTk
-from process_image import get_frame
+from process_image import get_frame, tools
 
 class_get_image = get_frame.GetFrameFromImage()
+tools_instance =  tools.Tools()
 
 class panel_config:
     def __init__(self) -> None:
+        self.list_images = tools_instance.list_images()
+        self.long_list_number = len(self.list_images) - 1
         # Crear la ventana principal
         self.root = Tk()
         self.root.title("OpenCV y Tkinter")
@@ -27,13 +30,20 @@ class panel_config:
 
         self.image = Label(image_frame)
         self.image.grid(row = 0, column = 0)
-        self.load_image()
 
         config_frame = LabelFrame(main_frame,text="Configuración")
         config_frame.grid(row = 0, column = 1, pady = 5)
 
-        boton_cargar = Button(config_frame, text="Cargar Imagen")
-        boton_cargar.grid()
+        boton_cargar = Button(config_frame, text="Siguiente ->", command=lambda:self.next_image(1))
+        boton_cargar.grid(row = 0, column = 0, pady = 5)
+        boton_cargar = Button(config_frame, text="<- Anterior", command=lambda:self.next_image(-1))
+        boton_cargar.grid(row = 1, column = 0, pady = 5)
+
+        self.load_image()
+        self.number_image = -1
+
+        self.root.mainloop()
+
 
     def resize_image(self, frame, scale:int|float = 2):
         frame_height, frame_width, _ = frame.shape
@@ -58,19 +68,16 @@ class panel_config:
             return
         self.show_image(frame)
 
+    def next_image(self, next:int):
+        self.number_image += next
+        if self.number_image > self.long_list_number:
+            self.number_image = 0
 
+        if self.number_image < 0:
+            self.number_image = self.long_list_number
 
-    # def run(self):
+        self.load_image(self.list_images[self.number_image])
 
-    #     # Botón para cargar una imagen
-    #     boton_cargar = Button(self.root, text="Cargar Imagen", command=self.load_image)
-    #     boton_cargar.grid()
-
-    #     # Etiqueta para mostrar la imagen
-    #     self.label_imagen = Label(self.root)
-    #     self.label_imagen.grid()
-
-        self.root.mainloop()
 
 a = panel_config()
 # a.run()
