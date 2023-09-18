@@ -109,7 +109,7 @@ def run(path_image, show_process, show_plate):
 
 show_process_frame = True
 show_plate = True
-path_image= 'img/1.jpg'
+path_image= 'img/plates/1.jpg'
 
 run(path_image, show_process_frame, show_plate)
 

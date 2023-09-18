@@ -36,9 +36,9 @@ class panel_config:
         boton_cargar.grid()
 
     def resize_image(self, frame, scale:int|float = 2):
-        high, width = frame.shape[:2]
-        new_high = int(high // scale)
-        new_width = int(width // scale)
+        frame_height, frame_width, _ = frame.shape
+        new_high = int(frame_height // scale)
+        new_width = int(frame_width // scale)
 
         # Redimensionar la imagen
         return cv2.resize(frame, (new_width, new_high))
