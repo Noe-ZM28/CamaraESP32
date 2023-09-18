@@ -10,9 +10,14 @@ import cv2
 from tkinter import Tk, Button, Label, LabelFrame
 from PIL import Image, ImageTk
 from process_image import get_frame, tools
+from enum import Enum
 
 class_get_image = get_frame.GetFrameFromImage()
 tools_instance =  tools.Tools()
+
+class Direction(Enum):
+    FORWARD = 1
+    BACKWARD = -1
 
 class panel_config:
     def __init__(self) -> None:
@@ -34,9 +39,9 @@ class panel_config:
         config_frame = LabelFrame(main_frame,text="Configuración")
         config_frame.grid(row = 0, column = 1, pady = 5)
 
-        boton_cargar = Button(config_frame, text="Siguiente ->", command=lambda:self.next_image(1))
+        boton_cargar = Button(config_frame, text="Siguiente ->", command=lambda:self.next_image(Direction.FORWARD))
         boton_cargar.grid(row = 0, column = 0, pady = 5)
-        boton_cargar = Button(config_frame, text="<- Anterior", command=lambda:self.next_image(-1))
+        boton_cargar = Button(config_frame, text="<- Anterior", command=lambda:self.next_image(Direction.BACKWARD))
         boton_cargar.grid(row = 1, column = 0, pady = 5)
 
         self.load_image()
@@ -68,8 +73,8 @@ class panel_config:
             return
         self.show_image(frame)
 
-    def next_image(self, next:int):
-        self.number_image += next
+    def next_image(self, direction: Direction):
+        self.number_image += direction.value
         if self.number_image > self.long_list_number:
             self.number_image = 0
 
