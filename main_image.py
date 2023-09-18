@@ -15,12 +15,13 @@ thickness = 2
 
 # Definir las dimensiones deseadas del ROI
 roi_width = 400
-roi_height = 200
+roi_height = 600
 
 def run(path_image, show_process, show_plate):
     p_frame = ProcessFrame()
     clean = CleanData()
     frame_class = GetFrameFromImage()
+
 # while True: 
 
     frame = frame_class.get_frame(path_image)
