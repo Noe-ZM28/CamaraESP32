@@ -35,8 +35,21 @@ class panel_config:
         boton_cargar = Button(config_frame, text="Cargar Imagen")
         boton_cargar.grid()
 
-    def resize_image(self):
-        pass
+    def resize_image(self, frame, scale:int|float = 2):
+        high, width = frame.shape[:2]
+        new_high = int(high // scale)
+        new_width = int(width // scale)
+
+        # Redimensionar la imagen
+        return cv2.resize(frame, (new_width, new_high))
+
+    # Función para mostrar una imagen en un widget Tkinter
+    def show_image(self, frame):
+        new_frame = self.resize_image(frame)
+        frame = Image.fromarray(new_frame)
+        frame = ImageTk.PhotoImage(frame)
+        self.image.config(image=frame)
+        self.image.image = frame
 
     # Función para cargar una imagen usando OpenCV
     def load_image(self, img:str = './img/tools/none_image.jpg'):
@@ -45,12 +58,6 @@ class panel_config:
             return
         self.show_image(frame)
 
-    # Función para mostrar una imagen en un widget Tkinter
-    def show_image(self, frame):
-        frame = Image.fromarray(frame)
-        frame = ImageTk.PhotoImage(frame)
-        self.image.config(image=frame)
-        self.image.image = frame
 
 
     # def run(self):
