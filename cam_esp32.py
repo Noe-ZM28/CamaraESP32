@@ -206,7 +206,7 @@ def run(url, show_process, show_plate):
             break
 
 show_process_frame = False
-show_plate = True
+show_plate = False
 ip = "192.168.1.160"
 ip = "192.168.1.227"
 URL = f'http://{ip}:81/stream'
