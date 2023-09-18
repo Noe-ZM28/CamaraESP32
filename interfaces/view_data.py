@@ -44,7 +44,7 @@ class panel_config:
         boton_cargar = Button(config_frame, text="<- Anterior", command=lambda:self.next_image(Direction.BACKWARD))
         boton_cargar.grid(row = 1, column = 0, pady = 5)
 
-        self.load_image()
+        self.load_image() if self.long_list_number == -1 else self.load_image(self.list_images[0])
         self.number_image = -1
 
         self.root.mainloop()
