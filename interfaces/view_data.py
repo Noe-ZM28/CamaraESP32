@@ -128,6 +128,9 @@ class panel_config:
 
         contours, frame_proceed = class_process_frame.process_frame(ROI_frame)
 
+        # Dibujar el rectángulo del área de interés (ROI) en el frame original
+        cv2.rectangle(original_frame, (x_roi, y_roi), (x_roi + self.roi_width, y_roi + self.roi_height), self.color_red, self.thickness)
+
         # Variable para rastrear si se ha detectado un rectángulo en este frame
         rectangle_detected = False
 
@@ -171,9 +174,6 @@ class panel_config:
 
                 # Dibujar el rectángulo del área de la placa en el frame original
                 cv2.rectangle(original_frame, (x_roi + x-5, y_roi + y-5), (x_roi + x + w+5, y_roi + y + h+5), self.color_green, self.thickness)
-
-                # Dibujar el rectángulo del área de interés (ROI) en el frame original
-                cv2.rectangle(original_frame, (x_roi, y_roi), (x_roi + self.roi_width, y_roi + self.roi_height), self.color_red, self.thickness)
 
                 # Se actualiza valor
                 self.real_txt_plate = clean_txt_plate
