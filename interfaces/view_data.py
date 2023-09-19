@@ -7,7 +7,7 @@ proyecto_dir = os.getcwd()
 sys.path.append(proyecto_dir)
 
 import cv2
-from tkinter import Tk, Button, Label, LabelFrame
+from tkinter import Tk, Button, Label, LabelFrame, Frame, Scale
 from PIL import Image, ImageTk
 from process_image import get_frame, tools, process_frame, process_text
 from enum import Enum
@@ -17,25 +17,26 @@ class_process_frame = process_frame.ProcessFrame()
 clean = process_text.CleanData()
 tools_instance =  tools.Tools()
 
-# Color verde
-color_green = (0, 255, 0)
-
-# Color rojo
-color_red = (255, 0, 0)
-
-# Grosor de la línea del rectángulo
-thickness = 2
-
-# Definir las dimensiones deseadas del ROI
-roi_width = 150
-roi_height = 300
-
 class Direction(Enum):
     FORWARD = 1
     BACKWARD = -1
 
 class panel_config:
     def __init__(self) -> None:
+
+        # Definir las dimensiones deseadas del ROI
+        self.roi_width = 150
+        self.roi_height = 300
+
+        # Color verde
+        self.color_green = (0, 255, 0)
+
+        # Color rojo
+        self.color_red = (255, 0, 0)
+
+        # Grosor de la línea del rectángulo
+        self.thickness = 2
+
         self.list_images = tools_instance.list_images()
         self.long_list_number = len(self.list_images) - 1
         # Crear la ventana principal
@@ -54,10 +55,17 @@ class panel_config:
         config_frame = LabelFrame(main_frame,text="Configuración")
         config_frame.grid(row = 0, column = 1, pady = 5)
 
-        boton_cargar = Button(config_frame, text="Siguiente ->", command=lambda:self.next_image(Direction.FORWARD))
+        frame_botones = Frame(config_frame)
+        frame_botones.grid(row = 0, column = 0, pady = 5)
+
+        boton_cargar = Button(frame_botones, text="<- Anterior", command=lambda:self.next_image(Direction.BACKWARD))
         boton_cargar.grid(row = 0, column = 0, pady = 5)
-        boton_cargar = Button(config_frame, text="<- Anterior", command=lambda:self.next_image(Direction.BACKWARD))
-        boton_cargar.grid(row = 1, column = 0, pady = 5)
+        boton_cargar = Button(frame_botones, text="Siguiente ->", command=lambda:self.next_image(Direction.FORWARD))
+        boton_cargar.grid(row = 0, column = 1, pady = 5)
+
+        frame_data_config= Frame(config_frame)
+        frame_data_config.grid(row = 1, column = 0, pady = 5)
+
 
         self.load_image(self.list_images[0])
         self.number_image = -1
@@ -91,8 +99,8 @@ class panel_config:
         frame = self.resize_image(frame, 1)
 
         # Calcular las coordenadas para que el ROI esté en el centro del frame
-        x_roi = (self.frame_width - roi_width) // 2  # Resta la mitad del ROI al ancho del frame
-        y_roi = (self.frame_height - roi_height) // 2  # Resta la mitad del ROI a la altura del frame
+        x_roi = (self.frame_width - self.roi_width) // 2  # Resta la mitad del ROI al ancho del frame
+        y_roi = (self.frame_height - self.roi_height) // 2  # Resta la mitad del ROI a la altura del frame
 
         contours, frame_proceed = class_process_frame.process_frame(frame)
 
@@ -138,16 +146,16 @@ class panel_config:
                 clean_txt_plate = clean.remove_strange_caracteres(txt_plate)
 
                 # Dibujar el rectángulo del área de la placa
-                cv2.rectangle(frame, (x-5, y-5), (x + w+5, y + h+5), color_green, thickness)
+                cv2.rectangle(frame, (x-5, y-5), (x + w+5, y + h+5), self.color_green, self.thickness)
 
                 # Dibujar el rectángulo del area de interes
-                cv2.rectangle(frame, (x_roi, y_roi), (x_roi + roi_width, y_roi + roi_height), color_red, thickness)
+                cv2.rectangle(frame, (x_roi, y_roi), (x_roi + self.roi_width, y_roi + self.roi_height), self.color_red, self.thickness)
 
                 # Se actualiza valor
                 real_txt_plate = clean_txt_plate
 
                 # Dibujar el texto de la placa sobre el recuadro rojo
-                cv2.putText(frame, f'Texto: {real_txt_plate}', (0, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.75, color_green, 2)
+                cv2.putText(frame, f'Texto: {real_txt_plate}', (0, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.75, self.color_green, 2)
 
                 print("Ancho: ",w)
                 print("Alto: ",h)
