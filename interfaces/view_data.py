@@ -37,6 +37,8 @@ class panel_config:
         # Grosor de la línea del rectángulo
         self.thickness = 2
 
+        self.number_image = 0
+
         self.list_images = tools_instance.list_images()
         self.long_list_number = len(self.list_images) - 1
         # Crear la ventana principal
@@ -66,12 +68,20 @@ class panel_config:
         frame_data_config= Frame(config_frame)
         frame_data_config.grid(row = 1, column = 0, pady = 5)
 
+        roi_scale = Scale(frame_data_config, from_=10, to=500, label="Tamaño ROI", orient="horizontal", command=self.update_roi_size)
+        roi_scale.set(self.roi_width)  # Establece el valor inicial del tamaño del ROI
+        roi_scale.grid(row=0, column=0, padx=10, pady=10)
 
-        self.load_image(self.list_images[0])
-        self.number_image = -1
+        self.update_roi_size(self.roi_width)
+
+        self.load_image(self.list_images[self.number_image])
 
         self.root.mainloop()
 
+    def update_roi_size(self, new_size):
+        self.roi_width = int(new_size)
+        self.roi_height = int(new_size)
+        self.load_image(self.list_images[self.number_image])
 
     def resize_image(self, frame, scale:int = 2):
         new_high = int(self.frame_height // scale)
@@ -101,6 +111,9 @@ class panel_config:
         # Calcular las coordenadas para que el ROI esté en el centro del frame
         x_roi = (self.frame_width - self.roi_width) // 2  # Resta la mitad del ROI al ancho del frame
         y_roi = (self.frame_height - self.roi_height) // 2  # Resta la mitad del ROI a la altura del frame
+
+        # Recortar el frame al área del ROI
+        frame = frame[y_roi:y_roi + self.roi_height, x_roi:x_roi + self.roi_width]
 
         contours, frame_proceed = class_process_frame.process_frame(frame)
 
