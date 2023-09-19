@@ -83,9 +83,9 @@ class panel_config:
         self.roi_height = int(new_size)
         self.load_image(self.list_images[self.number_image])
 
-    def resize_image(self, frame, scale:int = 2):
-        new_high = int(self.frame_height // scale)
-        new_width = int(self.frame_width // scale)
+    def resize_image(self, frame, frame_height, frame_width,scale:int = 2):
+        new_high = int(frame_height // scale)
+        new_width = int(frame_width // scale)
 
         # Redimensionar la imagen
         return cv2.resize(frame, (new_width, new_high))
@@ -100,22 +100,22 @@ class panel_config:
 
     # Función para cargar una imagen usando OpenCV
     def load_image(self, img:str = './img/tools/none_image.jpg', show_plate:bool = False):
-        frame = class_get_image.get_frame(img)
-        if frame is None:
+        original_frame = class_get_image.get_frame(img)
+        if original_frame is None:
             return
 
-        self.frame_height, self.frame_width = frame.shape[:2]
+        self.frame_height, self.frame_width = original_frame.shape[:2]
 
-        frame = self.resize_image(frame, 1)
+        resize_frame = self.resize_image(original_frame, self.frame_height, self.frame_width, 1)
 
         # Calcular las coordenadas para que el ROI esté en el centro del frame
         x_roi = (self.frame_width - self.roi_width) // 2  # Resta la mitad del ROI al ancho del frame
         y_roi = (self.frame_height - self.roi_height) // 2  # Resta la mitad del ROI a la altura del frame
 
         # Recortar el frame al área del ROI
-        frame = frame[y_roi:y_roi + self.roi_height, x_roi:x_roi + self.roi_width]
+        ROI_frame = resize_frame[y_roi:y_roi + self.roi_height, x_roi:x_roi + self.roi_width]
 
-        contours, frame_proceed = class_process_frame.process_frame(frame)
+        contours, frame_proceed = class_process_frame.process_frame(ROI_frame)
 
         # Variable para rastrear si se ha detectado un rectángulo en este frame
         rectangle_detected = False
@@ -159,16 +159,16 @@ class panel_config:
                 clean_txt_plate = clean.remove_strange_caracteres(txt_plate)
 
                 # Dibujar el rectángulo del área de la placa
-                cv2.rectangle(frame, (x-5, y-5), (x + w+5, y + h+5), self.color_green, self.thickness)
+                cv2.rectangle(original_frame, (x-5, y-5), (x + w+5, y + h+5), self.color_green, self.thickness)
 
                 # Dibujar el rectángulo del area de interes
-                cv2.rectangle(frame, (x_roi, y_roi), (x_roi + self.roi_width, y_roi + self.roi_height), self.color_red, self.thickness)
+                cv2.rectangle(original_frame, (x_roi, y_roi), (x_roi + self.roi_width, y_roi + self.roi_height), self.color_red, self.thickness)
 
                 # Se actualiza valor
                 real_txt_plate = clean_txt_plate
 
                 # Dibujar el texto de la placa sobre el recuadro rojo
-                cv2.putText(frame, f'Texto: {real_txt_plate}', (0, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.75, self.color_green, 2)
+                cv2.putText(ROI_frame, f'Texto: {real_txt_plate}', (0, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.75, self.color_green, 2)
 
                 print("Ancho: ",w)
                 print("Alto: ",h)
@@ -176,7 +176,7 @@ class panel_config:
                 print("Placa: ",real_txt_plate)
                 rectangle_detected = True
 
-        self.show_image(frame)
+        self.show_image(original_frame)
 
     def next_image(self, direction: Direction):
         self.number_image += direction.value
