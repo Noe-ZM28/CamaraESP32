@@ -139,7 +139,7 @@ class panel_config:
 
             aspect_ratio = w / float(h)
 
-            # Descargar rectangulos pequeños
+            # Descargar rectángulos pequeños
             # if (w > 150 and h > 50):continue
 
             if(aspect_ratio <= 3) and (aspect_ratio > 2):
@@ -151,24 +151,24 @@ class panel_config:
                 if txt_plate[0].islower():
                     continue
 
-                #Si la cantidad de letras detectadas es menor a 7 o la cantidad de guines es menor a 1 pasa al siguiene Frame 
+                #Si la cantidad de letras detectadas es menor a 7 o la cantidad de guines es menor a 1 pasa al siguiente Frame 
                 if len(txt_plate) < 7 or txt_plate.count("-") < 1:
                     continue
                 if show_plate:
                     cv2.imshow('plate_image', plate_image)
                 clean_txt_plate = clean.remove_strange_caracteres(txt_plate)
 
-                # Dibujar el rectángulo del área de la placa
-                cv2.rectangle(original_frame, (x-5, y-5), (x + w+5, y + h+5), self.color_green, self.thickness)
+                # Dibujar el rectángulo del área de la placa en el frame original
+                cv2.rectangle(original_frame, (x_roi + x-5, y_roi + y-5), (x_roi + x + w+5, y_roi + y + h+5), self.color_green, self.thickness)
 
-                # Dibujar el rectángulo del area de interes
+                # Dibujar el rectángulo del área de interés (ROI) en el frame original
                 cv2.rectangle(original_frame, (x_roi, y_roi), (x_roi + self.roi_width, y_roi + self.roi_height), self.color_red, self.thickness)
 
                 # Se actualiza valor
                 real_txt_plate = clean_txt_plate
 
                 # Dibujar el texto de la placa sobre el recuadro rojo
-                cv2.putText(ROI_frame, f'Texto: {real_txt_plate}', (0, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.75, self.color_green, 2)
+                cv2.putText(original_frame, f'Texto: {real_txt_plate}', (0, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.75, self.color_green, 2)
 
                 print("Ancho: ",w)
                 print("Alto: ",h)
