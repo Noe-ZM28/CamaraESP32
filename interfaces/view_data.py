@@ -46,7 +46,11 @@ class panel_config:
         # Crear la ventana principal
         self.root = Tk()
         self.root.title("OpenCV y Tkinter")
+        self.interface()
     
+        self.root.mainloop()
+
+    def interface(self):
         main_frame = LabelFrame(self.root, text="Principal")
         main_frame.grid(row = 0, column = 0, pady = 5)
 
@@ -86,7 +90,6 @@ class panel_config:
 
         self.load_image(self.list_images[self.number_image])
 
-        self.root.mainloop()
 
     def update_roi_size(self, new_size):
         self.roi_width = int(new_size)
