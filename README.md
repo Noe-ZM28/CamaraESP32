@@ -7,6 +7,10 @@ sudo pip3 install -r requirements-txt
 Windows
 pip3install -r requirements-txt
 
+instalar complemento para linux
+
+sudo apt-get install python3-pil python3-pil.imagetk
+
 Borrar memoria flash
 python3 -m esptool --chip esp32 --port /dev/ttyUSB0 erase_flash
 
