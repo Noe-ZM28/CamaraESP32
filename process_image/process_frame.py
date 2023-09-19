@@ -7,7 +7,7 @@ class ProcessFrame:
     def process_frame(self,
             frame: ndarray,
             show: bool = False,
-            sigma = 1,
+            count_gasussian = 1,
             sharpen_kernel: ndarray = np.array([[-1, -1, -1],
                                                 [-1, 9, -1],
                                                 [-1, -1, -1]]),
@@ -23,17 +23,16 @@ class ProcessFrame:
         Returns:
             list: Contornos encontrados y frame procesado.
         """
-        # Calcular el tamaño del kernel basado en sigma
-        kernel_size = int(6 * sigma + 1)
-        if kernel_size % 2 == 0:
-            # Asegurar que el tamaño del kernel sea impar
-            kernel_size += 1
-
         # Convertir el área de interés a escala de grises
         gray_roi = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
         # Aplicar un filtro gaussiano para reducir el ruido y mejorar la detección del texto
-        blurred_roi = cv2.GaussianBlur(gray_roi, (kernel_size, kernel_size), sigma)
+        blurred_roi = cv2.GaussianBlur(gray_roi, (5, 5), 0)
+
+        if count_gasussian > 1:
+            for i in range(count_gasussian):
+                blurred_roi = cv2.GaussianBlur(blurred_roi, (5, 5), 0)
+
 
         # Aplicar un filtro de nitidez para mejorar la nitidez de la imagen
         sharpened_roi = cv2.filter2D(blurred_roi, -1, sharpen_kernel)
