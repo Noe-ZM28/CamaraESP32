@@ -21,7 +21,7 @@ tools_instance =  tools.Tools()
 color_green = (0, 255, 0)
 
 # Color rojo
-color_red = (0, 0, 255)
+color_red = (255, 0, 0)
 
 # Grosor de la línea del rectángulo
 thickness = 2
@@ -65,7 +65,7 @@ class panel_config:
         self.root.mainloop()
 
 
-    def resize_image(self, frame, scale:int|float = 2):
+    def resize_image(self, frame, scale:int = 2):
         new_high = int(self.frame_height // scale)
         new_width = int(self.frame_width // scale)
 
@@ -88,13 +88,13 @@ class panel_config:
 
         self.frame_height, self.frame_width = frame.shape[:2]
 
-        frame = self.resize_image(frame)
+        frame = self.resize_image(frame, 1)
 
         # Calcular las coordenadas para que el ROI esté en el centro del frame
         x_roi = (self.frame_width - roi_width) // 2  # Resta la mitad del ROI al ancho del frame
         y_roi = (self.frame_height - roi_height) // 2  # Resta la mitad del ROI a la altura del frame
 
-        contours, frame_proceed = class_process_frame.process_frame(frame, True)
+        contours, frame_proceed = class_process_frame.process_frame(frame)
 
         # Variable para rastrear si se ha detectado un rectángulo en este frame
         rectangle_detected = False
@@ -149,13 +149,12 @@ class panel_config:
                 # Dibujar el texto de la placa sobre el recuadro rojo
                 cv2.putText(frame, f'Texto: {real_txt_plate}', (0, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.75, color_green, 2)
 
-                
-
                 print("Ancho: ",w)
                 print("Alto: ",h)
                 print("Relación: ",aspect_ratio)
                 print("Placa: ",real_txt_plate)
                 rectangle_detected = True
+
         self.show_image(frame)
 
     def next_image(self, direction: Direction):
