@@ -39,6 +39,8 @@ class panel_config:
 
         self.number_image = 0
 
+        self.real_txt_plate = "N/E"
+
         self.list_images = tools_instance.list_images()
         self.long_list_number = len(self.list_images) - 1
         # Crear la ventana principal
@@ -72,6 +74,14 @@ class panel_config:
         roi_scale.set(self.roi_width)  # Establece el valor inicial del tamaño del ROI
         roi_scale.grid(row=0, column=0, padx=10, pady=10)
 
+        # Muestra la escala del ROI en una etiqueta
+        self.scale_label = Label(frame_data_config, text=f'Scala ROI: {self.roi_width}')
+        self.scale_label.grid(row=1, column=0)
+
+        # Muestra el texto de la placa en una etiqueta
+        self.plate_label = Label(frame_data_config, text=f'Texto de la placa: {self.real_txt_plate}')
+        self.plate_label.grid(row=2, column=0)
+
         self.update_roi_size(self.roi_width)
 
         self.load_image(self.list_images[self.number_image])
@@ -82,6 +92,7 @@ class panel_config:
         self.roi_width = int(new_size)
         self.roi_height = int(new_size)
         self.load_image(self.list_images[self.number_image])
+        self.scale_label.config(text = f'Scala ROI: {new_size}')
 
     def resize_image(self, frame, frame_height, frame_width,scale:int = 2):
         new_high = int(frame_height // scale)
@@ -165,15 +176,16 @@ class panel_config:
                 cv2.rectangle(original_frame, (x_roi, y_roi), (x_roi + self.roi_width, y_roi + self.roi_height), self.color_red, self.thickness)
 
                 # Se actualiza valor
-                real_txt_plate = clean_txt_plate
+                self.real_txt_plate = clean_txt_plate
+                self.plate_label.config(text = f'Texto de la placa: {self.real_txt_plate}')
 
                 # Dibujar el texto de la placa sobre el recuadro rojo
-                cv2.putText(original_frame, f'Texto: {real_txt_plate}', (0, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.75, self.color_green, 2)
+                cv2.putText(original_frame, f'Texto: {self.real_txt_plate}', (0, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.75, self.color_green, 2)
 
                 print("Ancho: ",w)
                 print("Alto: ",h)
                 print("Relación: ",aspect_ratio)
-                print("Placa: ",real_txt_plate)
+                print("Placa: ",self.real_txt_plate)
                 rectangle_detected = True
 
         self.show_image(original_frame)
