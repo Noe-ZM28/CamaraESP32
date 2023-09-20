@@ -27,8 +27,8 @@ class panel_config:
         self.font = ("Arial", 16)
 
         # Definir las dimensiones deseadas del ROI
-        self.roi_width = 300
-        self.roi_height = 150
+        self.roi_width = 350
+        self.roi_height = 250
 
         # Definir las coordenadas iniciales del ROI
         self.roi_x = 0
@@ -108,7 +108,7 @@ class panel_config:
         roi_scale_y.grid(row=3, column=0, padx=10, pady=10, sticky=NSEW)
 
         # Muestra la escala del ROI en una etiqueta
-        self.scale_label = Label(frame_data_config, text=f'Scala ROI: Ancho: {self.roi_width}, Alto: {self.roi_height},\nX: {self.roi_x}, Y: {self.roi_y}', width=20, font=self.font)
+        self.scale_label = Label(frame_data_config, text=f'Scala ROI: \n Ancho: {self.roi_width}, Alto: {self.roi_height},\nX: {self.roi_x}, Y: {self.roi_y}', width=20, font=self.font)
         self.scale_label.grid(row=4, column=0, sticky=NSEW)
 
 
@@ -116,22 +116,22 @@ class panel_config:
     def update_roi_width_size(self, new_size):
         self.roi_width = int(new_size)
         self.load_image(self.list_images[self.number_image])
-        self.scale_label.config(text = f'Scala ROI: Ancho: {new_size}, Alto: {self.roi_height}, X: {self.roi_x}, Y: {self.roi_y}')
+        self.scale_label.config(text = f'Scala ROI: \n Ancho: {new_size}, Alto: {self.roi_height},\nX: {self.roi_x}, Y: {self.roi_y}')
 
     def update_roi_height_size(self, new_size):
         self.roi_height = int(new_size)
         self.load_image(self.list_images[self.number_image])
-        self.scale_label.config(text = f'Scala ROI: Ancho: {self.roi_width}, Alto: {new_size}, X: {self.roi_x}, Y: {self.roi_y}')
+        self.scale_label.config(text = f'Scala ROI: \n Ancho: {self.roi_width}, Alto: {new_size},\nX: {self.roi_x}, Y: {self.roi_y}')
 
     def update_roi_x_position(self, new_position):
         self.roi_x = int(new_position)
         self.load_image(self.list_images[self.number_image])
-        self.scale_label.config(text = f'Scala ROI: Ancho: {self.roi_width}, Alto: {self.roi_height}, X: {new_position}, Y: {self.roi_y}')
+        self.scale_label.config(text = f'Scala ROI: \n Ancho: {self.roi_width}, Alto: {self.roi_height},\nX: {new_position}, Y: {self.roi_y}')
 
     def update_roi_y_position(self, new_position):
         self.roi_y = int(new_position)
         self.load_image(self.list_images[self.number_image])
-        self.scale_label.config(text = f'Scala ROI: Ancho: {self.roi_width}, Alto: {self.roi_height}, X: {self.roi_x}, Y: {new_position}')
+        self.scale_label.config(text = f'Scala ROI: \n Ancho: {self.roi_width}, Alto: {self.roi_height},\nX: {self.roi_x}, Y: {new_position}')
 
     def resize_image(self, frame, frame_height, frame_width,scale:int = 2):
         new_high = int(frame_height // scale)
