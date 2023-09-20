@@ -78,9 +78,9 @@ class panel_config:
         frame_botones.grid(row = 1, column = 0, pady = 5)
 
         boton_cargar = Button(frame_botones, text="<- Anterior", command=lambda:self.next_image(Direction.BACKWARD), font=self.font)
-        boton_cargar.grid(row = 0, column = 0, pady = 5, sticky=NSEW)
+        boton_cargar.grid(row = 0, column = 0, padx = 5, pady = 5, sticky=NSEW)
         boton_cargar = Button(frame_botones, text="Siguiente ->", command=lambda:self.next_image(Direction.FORWARD), font=self.font)
-        boton_cargar.grid(row = 0, column = 1, pady = 5, sticky=NSEW)
+        boton_cargar.grid(row = 0, column = 1, padx = 5, pady = 5, sticky=NSEW)
 
         frame_data_config= LabelFrame(config_frame, text="Datos")
         frame_data_config.grid(row = 2, column = 0, pady = 5)
@@ -92,7 +92,7 @@ class panel_config:
         roi_scale_width.set(self.roi_width)  # Establece el valor inicial del ancho del ROI
         roi_scale_width.grid(row=0, column=0, padx=10, pady=10, sticky=NSEW)
 
-        roi_scale_height = Scale(frame_roi_size, from_=10, to=self.frame_height, label="Alto ROI", orient="horizontal", command=self.update_roi_height_size, font=self.font, length=300)
+        roi_scale_height = Scale(frame_roi_size, from_=10, to=self.frame_height, label="Alto ROI", orient="vertical", command=self.update_roi_height_size, font=self.font, length=300)
         roi_scale_height.set(self.roi_height)  # Establece el valor inicial del alto del ROI
         roi_scale_height.grid(row=1, column=0, padx=10, pady=10, sticky=NSEW)
 
