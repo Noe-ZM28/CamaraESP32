@@ -23,11 +23,12 @@ class Direction(Enum):
 
 class panel_config:
     def __init__(self) -> None:
-        self.font = ("Arial", 17)
+
+        self.font = ("Arial", 16)
 
         # Definir las dimensiones deseadas del ROI
-        self.roi_width = 150
-        self.roi_height = 300
+        self.roi_width = 100
+        self.roi_height = 100
 
         # Color verde
         self.color_green = (0, 255, 0)
@@ -64,14 +65,16 @@ class panel_config:
         config_frame = LabelFrame(main_frame,text="Configuración")
         config_frame.grid(row = 0, column = 1, pady = 5)
 
-        frame_placa = Frame(config_frame)
+        frame_placa = LabelFrame(config_frame,text="Placa")
         frame_placa.grid(row = 0, column = 0, pady = 5)
 
         # Muestra el texto de la placa en una etiqueta
-        self.plate_label = Label(frame_placa, text=f'Texto de la placa:\n{self.real_txt_plate}', font=self.font)
+        self.plate_label = Label(frame_placa, text=f'Texto de la placa: {self.real_txt_plate}', font=self.font)
         self.plate_label.grid(row=0, column=0, sticky=NSEW)
 
-        frame_botones = LabelFrame(config_frame,text="Datos")
+        self.load_image(self.list_images[self.number_image])
+
+        frame_botones = LabelFrame(config_frame,text="Dirección")
         frame_botones.grid(row = 1, column = 0, pady = 5)
 
         boton_cargar = Button(frame_botones, text="<- Anterior", command=lambda:self.next_image(Direction.BACKWARD), font=self.font)
@@ -79,27 +82,37 @@ class panel_config:
         boton_cargar = Button(frame_botones, text="Siguiente ->", command=lambda:self.next_image(Direction.FORWARD), font=self.font)
         boton_cargar.grid(row = 0, column = 1, pady = 5, sticky=NSEW)
 
-        frame_data_config= Frame(config_frame)
+        frame_data_config= LabelFrame(config_frame, text="Datos")
         frame_data_config.grid(row = 2, column = 0, pady = 5)
 
-        roi_scale = Scale(frame_data_config, from_=10, to=500, label="Tamaño ROI", orient="horizontal", command=self.update_roi_size, font=self.font, length=300)
-        roi_scale.set(self.roi_width)  # Establece el valor inicial del tamaño del ROI
-        roi_scale.grid(row=0, column=0, padx=10, pady=10, sticky=NSEW)
+        frame_roi_size = LabelFrame(frame_data_config, text="Tamaño frame")
+        frame_roi_size.grid(row = 0, column = 0, pady = 5)
+
+        roi_scale_width = Scale(frame_roi_size, from_=10, to=self.frame_width, label="Ancho ROI", orient="horizontal", command=self.update_roi_width_size, font=self.font, length=300)
+        roi_scale_width.set(self.roi_width)  # Establece el valor inicial del ancho del ROI
+        roi_scale_width.grid(row=0, column=0, padx=10, pady=10, sticky=NSEW)
+
+        roi_scale_height = Scale(frame_roi_size, from_=10, to=self.frame_height, label="Alto ROI", orient="horizontal", command=self.update_roi_height_size, font=self.font, length=300)
+        roi_scale_height.set(self.roi_height)  # Establece el valor inicial del alto del ROI
+        roi_scale_height.grid(row=1, column=0, padx=10, pady=10, sticky=NSEW)
 
         # Muestra la escala del ROI en una etiqueta
-        self.scale_label = Label(frame_data_config, text=f'Scala ROI: {self.roi_width}', font=self.font, width=20)
-        self.scale_label.grid(row=1, column=0, sticky=NSEW)
+        self.scale_label = Label(frame_roi_size, text=f'Scala ROI: {self.roi_width}', font=self.font, width=20)
+        self.scale_label.grid(row=2, column=0, sticky=NSEW)
 
-        self.update_roi_size(self.roi_width)
+        frame_roi_position= LabelFrame(frame_data_config, text="Posicion frame")
+        frame_roi_position.grid(row = 1, column = 0, pady = 5)
 
-        self.load_image(self.list_images[self.number_image])
 
-
-    def update_roi_size(self, new_size):
+    def update_roi_width_size(self, new_size):
         self.roi_width = int(new_size)
+        self.load_image(self.list_images[self.number_image])
+        self.scale_label.config(text = f'Scala ROI:\nAncho: {new_size}, Alto: {self.roi_height}')
+
+    def update_roi_height_size(self, new_size):
         self.roi_height = int(new_size)
         self.load_image(self.list_images[self.number_image])
-        self.scale_label.config(text = f'Scala ROI: {new_size}')
+        self.scale_label.config(text = f'Scala ROI:\nAncho: {self.roi_width}, Alto: {new_size}')
 
     def resize_image(self, frame, frame_height, frame_width,scale:int = 2):
         new_high = int(frame_height // scale)
@@ -184,7 +197,7 @@ class panel_config:
 
                 # Se actualiza valor
                 self.real_txt_plate = clean_txt_plate
-                self.plate_label.config(text = f'Texto de la placa:\n{self.real_txt_plate}')
+                self.plate_label.config(text = f'Texto de la placa: {self.real_txt_plate}')
 
                 # Dibujar el texto de la placa sobre el recuadro rojo
                 cv2.putText(original_frame, f'Texto: {self.real_txt_plate}', (0, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.75, self.color_green, 2)
@@ -207,7 +220,4 @@ class panel_config:
 
         self.load_image(self.list_images[self.number_image])
 
-
 a = panel_config()
-# a.run()
-
