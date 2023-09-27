@@ -90,22 +90,22 @@ class panel_config:
         frame_data_config.grid(row = 2, column = 0, pady = 5)
 
         # Controles deslizantes para ajustar el ancho y alto del ROI
-        roi_scale_width = Scale(frame_data_config, from_=10, to=self.frame_width, label="Ancho ROI", orient="horizontal", command=self.update_roi_width_size, font=self.font, length=300)
-        roi_scale_width.set(self.roi_width)  # Establece el valor inicial del ancho del ROI
-        roi_scale_width.grid(row=0, column=0, padx=10, pady=10, sticky=NSEW)
+        self.roi_scale_width = Scale(frame_data_config, from_=10, to=self.frame_width, label="Ancho ROI", orient="horizontal", command=self.update_roi_width_size, font=self.font, length=300, resolution=10)
+        self.roi_scale_width.set(self.roi_width)  # Establece el valor inicial del ancho del ROI
+        self.roi_scale_width.grid(row=0, column=0, padx=10, pady=10, sticky=NSEW)
 
-        roi_scale_height = Scale(frame_data_config, from_=10, to=self.frame_height, label="Alto ROI", orient="horizontal", command=self.update_roi_height_size, font=self.font, length=300)
-        roi_scale_height.set(self.roi_height)  # Establece el valor inicial del alto del ROI
-        roi_scale_height.grid(row=1, column=0, padx=10, pady=10, sticky=NSEW)
+        self.roi_scale_height = Scale(frame_data_config, from_=10, to=self.frame_height, label="Alto ROI", orient="horizontal", command=self.update_roi_height_size, font=self.font, length=300, resolution=10)
+        self.roi_scale_height.set(self.roi_height)  # Establece el valor inicial del alto del ROI
+        self.roi_scale_height.grid(row=1, column=0, padx=10, pady=10, sticky=NSEW)
 
         # Controles deslizantes para ajustar la posición horizontal (X) y vertical (Y) del ROI
-        roi_scale_x = Scale(frame_data_config, from_=0, to=self.frame_width, label="Posición X", orient="horizontal", command=self.update_roi_x_position, font=self.font, length=300)
-        roi_scale_x.set(self.roi_x)  # Establece el valor inicial de la posición X del ROI
-        roi_scale_x.grid(row=2, column=0, padx=10, pady=10, sticky=NSEW)
+        self.roi_scale_x = Scale(frame_data_config, from_=0, to=self.frame_width, label="Posición X", orient="horizontal", command=self.update_roi_x_position, font=self.font, length=300, resolution=10)
+        self.roi_scale_x.set(self.roi_x)  # Establece el valor inicial de la posición X del ROI
+        self.roi_scale_x.grid(row=2, column=0, padx=10, pady=10, sticky=NSEW)
 
-        roi_scale_y = Scale(frame_data_config, from_=0, to=self.frame_height, label="Posición Y", orient="horizontal", command=self.update_roi_y_position, font=self.font, length=300)
-        roi_scale_y.set(self.roi_y)  # Establece el valor inicial de la posición Y del ROI
-        roi_scale_y.grid(row=3, column=0, padx=10, pady=10, sticky=NSEW)
+        self.roi_scale_y = Scale(frame_data_config, from_=0, to=self.frame_height, label="Posición Y", orient="horizontal", command=self.update_roi_y_position, font=self.font, length=300, resolution=10)
+        self.roi_scale_y.set(self.roi_y)  # Establece el valor inicial de la posición Y del ROI
+        self.roi_scale_y.grid(row=3, column=0, padx=10, pady=10, sticky=NSEW)
 
         # Muestra la escala del ROI en una etiqueta
         self.scale_label = Label(frame_data_config, text=f'Scala ROI: \n Ancho: {self.roi_width}, Alto: {self.roi_height},\nX: {self.roi_x}, Y: {self.roi_y}', width=20, font=self.font)
@@ -211,7 +211,7 @@ class panel_config:
                 clean_txt_plate = clean.remove_strange_caracteres(txt_plate)
 
                 # Dibujar el rectángulo del área de la placa en el frame original
-                cv2.rectangle(original_frame, (x_roi + x-5, y_roi + y-5), (x_roi + x + w+5, y_roi + y + h+5), self.color_green, self.thickness)
+                cv2.rectangle(original_frame, (x_roi + x, y_roi + y), (x_roi + x + w, y_roi + y + h), self.color_green, self.thickness)
 
                 # Se actualiza valor
                 self.real_txt_plate = clean_txt_plate
