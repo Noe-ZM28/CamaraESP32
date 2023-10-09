@@ -34,6 +34,9 @@ class panel_config:
         self.roi_x = 500
         self.roi_y = 150
 
+        self.frame_height = 100
+        self.frame_width = 100
+
         # Color verde
         self.color_green = (0, 255, 0)
 
@@ -45,7 +48,7 @@ class panel_config:
 
         self.number_image = 0
 
-        self.real_txt_plate = "N/E"
+        self.real_txt_plate = "S/P"
 
         self.list_images = tools_instance.list_images()
         self.long_list_number = len(self.list_images) - 1
@@ -53,7 +56,6 @@ class panel_config:
         self.root = Tk()
         self.root.title("OpenCV y Tkinter")
         self.interface()
-    
         self.root.mainloop()
 
     def interface(self):
@@ -76,7 +78,7 @@ class panel_config:
         frame_placa.grid(row = 0, column = 0, pady = 5)
 
         # Muestra el texto de la placa en una etiqueta
-        self.plate_label = Label(frame_placa, text=f'Texto de la placa: S/P', font=self.font)
+        self.plate_label = Label(frame_placa, text=f'Texto de la placa: {self.real_txt_plate}', font=self.font)
         self.plate_label.grid(row=0, column=0, sticky=NSEW)
 
         self.load_image(self.list_images[self.number_image])
@@ -171,7 +173,7 @@ class panel_config:
         # Recortar el frame al área del ROI
         ROI_frame = resize_frame[y_roi:y_roi + self.roi_height, x_roi:x_roi + self.roi_width]
 
-        data_image_proced = class_process_frame.process_frame(ROI_frame)
+        data_image_proced = class_process_frame.process_frame(frame= ROI_frame)
 
         if data_image_proced is None:
             self.None_plate()
@@ -210,6 +212,7 @@ class panel_config:
             # if (w > 150 and h > 50):continue
 
             if(aspect_ratio > 3) and (aspect_ratio < 2):
+                self.None_plate()
                 continue
 
             # Recortar y procesar el área de la placa
@@ -236,7 +239,7 @@ class panel_config:
             print("Ancho: ",w)
             print("Alto: ",h)
             print("Relación: ",aspect_ratio)
-            print("Placa: ",self.real_txt_plate)
+            print(f"Placa: {self.get_plate_text()}")
             rectangle_detected = True
 
         self.show_image(original_frame)
@@ -252,6 +255,13 @@ class panel_config:
         self.load_image(self.list_images[self.number_image])
     
     def None_plate(self):
-        self.plate_label.config(text = f'Texto de la placa: S/P')
+        self.real_txt_plate = "S/P"
+    
+    def get_plate_text(self):
+        return self.real_txt_plate
+
 
 a = panel_config()
+# a.load_image('/home/pi/Documentos/WORKSPACE/CamaraESP32/img/plates/2.jpg')
+# print(a.get_plate_text())
+
