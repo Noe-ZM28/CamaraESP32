@@ -133,7 +133,7 @@ class panel_config:
         self.load_image(self.list_images[self.number_image])
         self.scale_label.config(text = f'Scala ROI: \n Ancho: {self.roi_width}, Alto: {self.roi_height},\nX: {self.roi_x}, Y: {new_position}')
 
-    def resize_image(self, frame, frame_height, frame_width,scale:int = 2):
+    def resize_image(self, frame, frame_height, frame_width,scale:int = 1):
         new_high = int(frame_height // scale)
         new_width = int(frame_width // scale)
 
@@ -155,7 +155,10 @@ class panel_config:
 
         self.frame_height, self.frame_width = original_frame.shape[:2]
 
-        resize_frame = self.resize_image(original_frame, self.frame_height, self.frame_width, 1)
+        resize_frame = self.resize_image(original_frame, self.frame_height, self.frame_width)
+
+        frame_height, frame_width = original_frame.shape[:2]
+        original_frame = self.resize_image(original_frame, frame_height, frame_width)
 
         # Calcular las coordenadas para el ROI
         x_roi = self.roi_x
@@ -200,12 +203,16 @@ class panel_config:
 
                 txt_plate = clean.image_to_txt(plate_image)
 
+                if txt_plate == "None":
+                    continue
+
                 if txt_plate[0].islower():
                     continue
 
                 #Si la cantidad de letras detectadas es menor a 7 o la cantidad de guines es menor a 1 pasa al siguiente Frame 
                 if len(txt_plate) < 7 or txt_plate.count("-") < 1:
                     continue
+
                 if show_plate:
                     cv2.imshow('plate_image', plate_image)
                 clean_txt_plate = clean.remove_strange_caracteres(txt_plate)
