@@ -7,7 +7,7 @@ proyecto_dir = os.getcwd()
 sys.path.append(proyecto_dir)
 
 import cv2
-from tkinter import Tk, Button, Label, LabelFrame, Frame, Scale, NSEW
+from tkinter import Tk, Toplevel, Button, Label, LabelFrame, Frame, Scale, NSEW
 from PIL import Image, ImageTk
 from process_image import get_frame, tools, process_frame, process_text
 from enum import Enum
@@ -66,14 +66,17 @@ class panel_config:
         self.image = Label(image_frame)
         self.image.grid(row = 0, column = 0)
 
-        config_frame = LabelFrame(main_frame,text="Configuración")
-        config_frame.grid(row = 0, column = 1, pady = 5)
+        self.root_config = Toplevel()
+        self.root_config.title("Configuración")
+
+        config_frame = LabelFrame(self.root_config,text="Configuración")
+        config_frame.grid(row = 0, column = 0, pady = 5)
 
         frame_placa = Frame(config_frame)
         frame_placa.grid(row = 0, column = 0, pady = 5)
 
         # Muestra el texto de la placa en una etiqueta
-        self.plate_label = Label(frame_placa, text=f'Texto de la placa:\n{self.real_txt_plate}', font=self.font)
+        self.plate_label = Label(frame_placa, text=f'Texto de la placa: S/P', font=self.font)
         self.plate_label.grid(row=0, column=0, sticky=NSEW)
 
         self.load_image(self.list_images[self.number_image])
@@ -90,20 +93,20 @@ class panel_config:
         frame_data_config.grid(row = 2, column = 0, pady = 5)
 
         # Controles deslizantes para ajustar el ancho y alto del ROI
-        self.roi_scale_width = Scale(frame_data_config, from_=10, to=self.frame_width, label="Ancho ROI", orient="horizontal", command=self.update_roi_width_size, font=self.font, length=300, resolution=10)
+        self.roi_scale_width = Scale(frame_data_config, from_=10, to=self.frame_width, label="Ancho ROI", orient="horizontal", command=self.update_roi_width_size, font=self.font, length=300, resolution=25)
         self.roi_scale_width.set(self.roi_width)  # Establece el valor inicial del ancho del ROI
         self.roi_scale_width.grid(row=0, column=0, padx=10, pady=10, sticky=NSEW)
 
-        self.roi_scale_height = Scale(frame_data_config, from_=10, to=self.frame_height, label="Alto ROI", orient="horizontal", command=self.update_roi_height_size, font=self.font, length=300, resolution=10)
+        self.roi_scale_height = Scale(frame_data_config, from_=10, to=self.frame_height, label="Alto ROI", orient="horizontal", command=self.update_roi_height_size, font=self.font, length=300, resolution=25)
         self.roi_scale_height.set(self.roi_height)  # Establece el valor inicial del alto del ROI
         self.roi_scale_height.grid(row=1, column=0, padx=10, pady=10, sticky=NSEW)
 
         # Controles deslizantes para ajustar la posición horizontal (X) y vertical (Y) del ROI
-        self.roi_scale_x = Scale(frame_data_config, from_=0, to=self.frame_width, label="Posición X", orient="horizontal", command=self.update_roi_x_position, font=self.font, length=300, resolution=10)
+        self.roi_scale_x = Scale(frame_data_config, from_=0, to=self.frame_width, label="Posición X", orient="horizontal", command=self.update_roi_x_position, font=self.font, length=300, resolution=25)
         self.roi_scale_x.set(self.roi_x)  # Establece el valor inicial de la posición X del ROI
         self.roi_scale_x.grid(row=2, column=0, padx=10, pady=10, sticky=NSEW)
 
-        self.roi_scale_y = Scale(frame_data_config, from_=0, to=self.frame_height, label="Posición Y", orient="horizontal", command=self.update_roi_y_position, font=self.font, length=300, resolution=10)
+        self.roi_scale_y = Scale(frame_data_config, from_=0, to=self.frame_height, label="Posición Y", orient="horizontal", command=self.update_roi_y_position, font=self.font, length=300, resolution=25)
         self.roi_scale_y.set(self.roi_y)  # Establece el valor inicial de la posición Y del ROI
         self.roi_scale_y.grid(row=3, column=0, padx=10, pady=10, sticky=NSEW)
 
@@ -151,6 +154,7 @@ class panel_config:
     def load_image(self, img:str = './img/tools/none_image.jpg', show_plate:bool = False):
         original_frame = class_get_image.get_frame(img)
         if original_frame is None:
+            self.None_plate()
             return
 
         self.frame_height, self.frame_width = original_frame.shape[:2]
@@ -167,7 +171,13 @@ class panel_config:
         # Recortar el frame al área del ROI
         ROI_frame = resize_frame[y_roi:y_roi + self.roi_height, x_roi:x_roi + self.roi_width]
 
-        contours, frame_proceed = class_process_frame.process_frame(ROI_frame)
+        data_image_proced = class_process_frame.process_frame(ROI_frame)
+
+        if data_image_proced is None:
+            self.None_plate()
+            return
+
+        contours, frame_proceed = data_image_proced
 
         # Dibujar el rectángulo del área de interés (ROI) en el frame original
         cv2.rectangle(original_frame, (x_roi, y_roi), (x_roi + self.roi_width, y_roi + self.roi_height), self.color_red, self.thickness)
@@ -185,11 +195,13 @@ class panel_config:
 
             # Si el contorno tiene cuatro vértices (rectángulo)
             if len(approx) != 4:
+                self.None_plate()
                 continue
 
             x, y, w, h = cv2.boundingRect(approx)
 
             if w < h:
+                self.None_plate()
                 continue
 
             aspect_ratio = w / float(h)
@@ -203,15 +215,11 @@ class panel_config:
 
                 txt_plate = clean.image_to_txt(plate_image)
 
-                if txt_plate == "None":
+
+                if txt_plate == "None" or txt_plate[0].islower() or len(txt_plate) < 7 or txt_plate.count("-") < 1:
+                    self.None_plate()
                     continue
 
-                if txt_plate[0].islower():
-                    continue
-
-                #Si la cantidad de letras detectadas es menor a 7 o la cantidad de guines es menor a 1 pasa al siguiente Frame 
-                if len(txt_plate) < 7 or txt_plate.count("-") < 1:
-                    continue
 
                 if show_plate:
                     cv2.imshow('plate_image', plate_image)
@@ -244,5 +252,8 @@ class panel_config:
             self.number_image = self.long_list_number
 
         self.load_image(self.list_images[self.number_image])
+    
+    def None_plate(self):
+        self.plate_label.config(text = f'Texto de la placa: S/P')
 
 a = panel_config()
