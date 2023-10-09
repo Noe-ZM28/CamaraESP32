@@ -1,0 +1,5 @@
+#!/bin/bash
+
+cd /home/pi/Documents/Amores/Cobro/
+
+sudo python3 pantallfull.py 
