@@ -27,12 +27,12 @@ class panel_config:
         self.font = ("Arial", 16)
 
         # Definir las dimensiones deseadas del ROI
-        self.roi_width = 350
-        self.roi_height = 250
+        self.roi_width = 360
+        self.roi_height = 260
 
         # Definir las coordenadas iniciales del ROI
-        self.roi_x = 0
-        self.roi_y = 0
+        self.roi_x = 500
+        self.roi_y = 150
 
         # Color verde
         self.color_green = (0, 255, 0)
@@ -151,7 +151,7 @@ class panel_config:
         self.image.image = frame
 
     # Función para cargar una imagen usando OpenCV
-    def load_image(self, img:str = './img/tools/none_image.jpg', show_plate:bool = False):
+    def load_image(self, img:str = './img/tools/none_image.jpg'):
         original_frame = class_get_image.get_frame(img)
         if original_frame is None:
             self.None_plate()
@@ -209,37 +209,35 @@ class panel_config:
             # Descargar rectángulos pequeños
             # if (w > 150 and h > 50):continue
 
-            if(aspect_ratio <= 3) and (aspect_ratio > 2):
-                # Recortar y procesar el área de la placa
-                plate_image = frame_proceed[y-5:y + h+5, x-5:x + w+5]
+            if(aspect_ratio > 3) and (aspect_ratio < 2):
+                continue
 
-                txt_plate = clean.image_to_txt(plate_image)
+            # Recortar y procesar el área de la placa
+            plate_image = frame_proceed[y-5:y + h+5, x-5:x + w+5]
 
+            txt_plate = clean.image_to_txt(plate_image)
 
-                if txt_plate == "None" or txt_plate[0].islower() or len(txt_plate) < 7 or txt_plate.count("-") < 1:
-                    self.None_plate()
-                    continue
+            if txt_plate == "None" or txt_plate[0].islower() or len(txt_plate) < 7 or txt_plate.count("-") < 1:
+                self.None_plate()
+                continue
 
+            clean_txt_plate = clean.remove_strange_caracteres(txt_plate)
 
-                if show_plate:
-                    cv2.imshow('plate_image', plate_image)
-                clean_txt_plate = clean.remove_strange_caracteres(txt_plate)
+            # Dibujar el rectángulo del área de la placa en el frame original
+            cv2.rectangle(original_frame, (x_roi + x, y_roi + y), (x_roi + x + w, y_roi + y + h), self.color_green, self.thickness)
 
-                # Dibujar el rectángulo del área de la placa en el frame original
-                cv2.rectangle(original_frame, (x_roi + x, y_roi + y), (x_roi + x + w, y_roi + y + h), self.color_green, self.thickness)
+            # Se actualiza valor
+            self.real_txt_plate = clean_txt_plate
+            self.plate_label.config(text = f'Texto de la placa: {self.real_txt_plate}')
 
-                # Se actualiza valor
-                self.real_txt_plate = clean_txt_plate
-                self.plate_label.config(text = f'Texto de la placa: {self.real_txt_plate}')
+            # Dibujar el texto de la placa sobre el recuadro rojo
+            cv2.putText(original_frame, f'Texto: {self.real_txt_plate}', (0, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.75, self.color_green, 2)
 
-                # Dibujar el texto de la placa sobre el recuadro rojo
-                cv2.putText(original_frame, f'Texto: {self.real_txt_plate}', (0, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.75, self.color_green, 2)
-
-                print("Ancho: ",w)
-                print("Alto: ",h)
-                print("Relación: ",aspect_ratio)
-                print("Placa: ",self.real_txt_plate)
-                rectangle_detected = True
+            print("Ancho: ",w)
+            print("Alto: ",h)
+            print("Relación: ",aspect_ratio)
+            print("Placa: ",self.real_txt_plate)
+            rectangle_detected = True
 
         self.show_image(original_frame)
 
