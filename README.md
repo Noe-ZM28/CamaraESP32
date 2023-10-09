@@ -5,8 +5,18 @@ Instalar requerimientos
 Linux
 sudo pip3 install -r requirements.txt
 
+instalar open cvdesde apt
+
+sudo apt-get install python3-opencv
+
+sudo apt-get install tesseract-ocr
+
 Windows
 pip3install -r requirements-txt
+
+instalar complemento para linux
+
+sudo apt-get install python3-pil python3-pil.imagetk
 
 Borrar memoria flash
 python3 -m esptool --chip esp32 --port /dev/ttyUSB0 erase_flash
