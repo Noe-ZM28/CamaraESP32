@@ -42,4 +42,6 @@ class CleanData:
             return txt_image + "\n" if line_break else txt_image
 
         except Exception as e:
+            print(e)
             return "None"
+

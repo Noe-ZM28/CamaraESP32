@@ -49,6 +49,7 @@ class ProcessFrame:
                 cv2.imshow('Detección de Bordes', edges)
 
             return contours, frame_proceed
+
         except Exception as e:
             print(e)
             return None
