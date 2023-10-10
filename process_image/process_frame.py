@@ -48,10 +48,16 @@ class ProcessFrame:
                 cv2.imshow('Filtro de Nitidez', sharpened_roi)
                 cv2.imshow('Detección de Bordes', edges)
 
+            input()
             return contours, frame_proceed
 
         except Exception as e:
             print(e)
             return None
 
+path_image = './img/plates/2.jpg'
+path_image = cv2.imread(path_image)
+
+a = ProcessFrame()
+a.process_frame(frame=path_image, show=True)
 
