@@ -154,6 +154,7 @@ class panel_config:
 
     # Función para cargar una imagen usando OpenCV
     def load_image(self, img:str = './img/tools/none_image.jpg'):
+        self.None_plate()
         original_frame = class_get_image.get_frame(img)
         if original_frame is None:
             self.None_plate()
@@ -256,6 +257,7 @@ class panel_config:
     
     def None_plate(self):
         self.real_txt_plate = "S/P"
+        self.plate_label.config(text = f'Texto de la placa: {self.real_txt_plate}')
     
     def get_plate_text(self):
         return self.real_txt_plate
